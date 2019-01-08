@@ -92,22 +92,25 @@ static fsm_rt_t task_echo()
         case RECEIVED:
             if (WAIT_EVENT(&s_tReceivedEvevt) ) {
                 s_tState = ECHO;
-            } else {
-                break;
             }
-            //break;
+            break;
         case ECHO:
             if (WAIT_EVENT(&s_tEchoEvevt)) {
                 s_tState = PRINT;
-            } else {
-                break;
             }
-            //break;
+            break;
         case PRINT:
             if (serial_out(s_chRecByte)) {
                 TASK_ECHO_RESET_FSM();
                 return fsm_rt_cpl;
             }
+//        case PRINT:
+//            if (WAIT_EVENT(&s_tEchoEvevt)) {
+//                if (serial_out(s_chRecByte)) {
+//                    TASK_ECHO_RESET_FSM();
+//                    return fsm_rt_cpl;
+//                }
+//            }
     }
     return fsm_rt_on_going;
 }
@@ -144,7 +147,6 @@ static fsm_rt_t task_print(void)
     static enum {
         START = 0,
         WATING,
-//        CRITICAL,
         PRINT
     } s_tState = START;
     switch (s_tState) {
@@ -156,15 +158,7 @@ static fsm_rt_t task_print(void)
                 RESET_EVENT(&s_tEchoEvevt);
                 s_tState = PRINT;
             }
-            else {
-                break;
-            }
-//            break;
-//        case CRITICAL:
-//            if (ENTER_CRITICAL_SECTOR(&s_tPrintCriticalSector)) {
-//                s_tState = PRINT;
-//            }
-//            break;
+            break;
         case PRINT:
             if (fsm_rt_cpl == print()) {
                 SET_EVENT(&s_tEchoEvevt);
