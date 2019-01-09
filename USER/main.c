@@ -56,7 +56,7 @@ static fsm_rt_t task_print(void);
 static fsm_rt_t task_echo(void);
 static event_t s_tPrintEvevt;
 static event_t s_tReceivedEvevt;
-static event_t s_tEchoEvevt;
+static event_t s_tNoEchoEvevt;
 static critical_sector_t s_tPrintCriticalSector;
 static uint8_t s_chRecByte;
 int main(void)
@@ -64,7 +64,7 @@ int main(void)
     system_init();
     INIT_EVENT(&s_tPrintEvevt,RESET,AUTO);
     INIT_EVENT(&s_tReceivedEvevt,RESET,AUTO);
-    INIT_EVENT(&s_tEchoEvevt,SET,MANUAL);
+    INIT_EVENT(&s_tNoEchoEvevt,RESET,MANUAL);
     INIT_CRITICAL_SECTOR(&s_tPrintCriticalSector);
     while(1) {
         breath_led();
@@ -82,7 +82,7 @@ static fsm_rt_t task_echo()
     static enum {
         START = 0,
         RECEIVED,
-        ECHO,
+//        ECHO,
         PRINT,
     } s_tState = START;
     switch (s_tState) {
@@ -91,26 +91,28 @@ static fsm_rt_t task_echo()
             //break;
         case RECEIVED:
             if (WAIT_EVENT(&s_tReceivedEvevt) ) {
-                s_tState = ECHO;
-            }
-            break;
-        case ECHO:
-            if (WAIT_EVENT(&s_tEchoEvevt)) {
                 s_tState = PRINT;
             }
             break;
-        case PRINT:
-            if (serial_out(s_chRecByte)) {
-                TASK_ECHO_RESET_FSM();
-                return fsm_rt_cpl;
-            }
-//        case PRINT:
-//            if (WAIT_EVENT(&s_tEchoEvevt)) {
-//                if (serial_out(s_chRecByte)) {
-//                    TASK_ECHO_RESET_FSM();
-//                    return fsm_rt_cpl;
-//                }
+//        case ECHO:
+//            if (!WAIT_EVENT(&s_tNoEchoEvevt)) {
+//                s_tState = PRINT;
 //            }
+//            break;
+//        case PRINT:
+//            if (serial_out(s_chRecByte)) {
+//                TASK_ECHO_RESET_FSM();
+//                return fsm_rt_cpl;
+//            }
+        case PRINT:
+            if (WAIT_EVENT(&s_tNoEchoEvevt)) {
+                break;
+            } else {
+                if (serial_out(s_chRecByte)) {
+                    TASK_ECHO_RESET_FSM();
+                    return fsm_rt_cpl;
+                }
+            }
     }
     return fsm_rt_on_going;
 }
@@ -155,13 +157,13 @@ static fsm_rt_t task_print(void)
             //break;
         case WATING:
             if (WAIT_EVENT(&s_tPrintEvevt)) {
-                RESET_EVENT(&s_tEchoEvevt);
+                SET_EVENT(&s_tNoEchoEvevt);
                 s_tState = PRINT;
             }
             break;
         case PRINT:
             if (fsm_rt_cpl == print()) {
-                SET_EVENT(&s_tEchoEvevt);
+                RESET_EVENT(&s_tNoEchoEvevt);
                 TASK_PRINT_RESET_FSM();
                 return fsm_rt_cpl;
             }
