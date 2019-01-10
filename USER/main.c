@@ -57,7 +57,6 @@ static fsm_rt_t task_echo(void);
 static event_t s_tPrintEvevt;
 static event_t s_tReceivedEvevt;
 static event_t s_tNoEchoEvevt;
-static critical_sector_t s_tPrintCriticalSector;
 static uint8_t s_chRecByte;
 int main(void)
 {
@@ -65,7 +64,6 @@ int main(void)
     INIT_EVENT(&s_tPrintEvevt,RESET,AUTO);
     INIT_EVENT(&s_tReceivedEvevt,RESET,AUTO);
     INIT_EVENT(&s_tNoEchoEvevt,RESET,MANUAL);
-    INIT_CRITICAL_SECTOR(&s_tPrintCriticalSector);
     while(1) {
         breath_led();
         task_check();
