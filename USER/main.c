@@ -56,12 +56,14 @@ static fsm_rt_t task_print(void);
 static fsm_rt_t task_echo(void);
 static event_t s_tPrintEvevt;
 static event_t s_tReceivedEvevt;
+static event_t s_tEchoCplEvevt;
 static uint8_t s_chRecByte;
 int main(void)
 {
     system_init();
     INIT_EVENT(&s_tPrintEvevt,RESET,MANUAL);
     INIT_EVENT(&s_tReceivedEvevt,RESET,AUTO);
+    INIT_EVENT(&s_tEchoCplEvevt,SET,AUTO);
     while(1) {
         breath_led();
         task_check();
@@ -102,14 +104,15 @@ static fsm_rt_t task_echo(void)
                 break;
             } else {
                 if (serial_out(s_chRecByte)) {
+                    SET_EVENT(&s_tEchoCplEvevt);
                     TASK_ECHO_RESET_FSM();
                     return fsm_rt_cpl;
                 }
             }
-            
     }
     return fsm_rt_on_going;
 }
+
 
 #define TASK_CHECK_RESET_FSM() \
 do { \
@@ -164,69 +167,86 @@ static fsm_rt_t task_print(void)
     return fsm_rt_on_going;
 }
 
-
 #define PRINT_CHECK_FSM() \
 do {\
-    s_tState = START;\
+    s_tCheck.tState = START;\
 } while(0)
 static fsm_rt_t check(void)
 {
-    static enum {
-        START = 0,
-        RCV_W,
-        RCV_O,
-        RCV_R,
-        RCV_L,
-        RCV_D,
-    } s_tState = START;
-    switch (s_tState ) {
+    static struct{
+        enum {
+            START = 0,
+            RCV_W,
+            RCV_O,
+            RCV_R,
+            RCV_L,
+            RCV_D,
+        } tState;
+        uint8_t chRecByte;
+    } s_tCheck = {START};
+    switch (s_tCheck.tState ) {
         case START:
-            s_tState = RCV_W;
+            s_tCheck.tState = RCV_W;
             //break;
         case RCV_W:
-            if (false != serial_in(&s_chRecByte)) {
-                SET_EVENT(&s_tReceivedEvevt);
-                if ('w' == s_chRecByte) {
-                    s_tState = RCV_O;
+            if (false != serial_in(&s_tCheck.chRecByte)) {
+                if (WAIT_EVENT(&s_tEchoCplEvevt)) {
+                    SET_EVENT(&s_tReceivedEvevt);
+                    s_chRecByte = s_tCheck.chRecByte;
+                }
+                if ('w' == s_tCheck.chRecByte) {
+                    s_tCheck.tState = RCV_O;
                 } else {
                     PRINT_CHECK_FSM();
                 }
             }
             break;
         case RCV_O:
-            if (false != serial_in(&s_chRecByte)) {
-                SET_EVENT(&s_tReceivedEvevt);
-                if ('o' == s_chRecByte) {
-                    s_tState = RCV_R;
+            if (false != serial_in(&s_tCheck.chRecByte)) {
+                if (WAIT_EVENT(&s_tEchoCplEvevt)) {
+                    SET_EVENT(&s_tReceivedEvevt);
+                    s_chRecByte = s_tCheck.chRecByte;
+                }
+                if ('o' == s_tCheck.chRecByte) {
+                    s_tCheck.tState = RCV_R;
                 } else {
                     PRINT_CHECK_FSM();
                 }
             }
             break;
         case RCV_R:
-            if (false != serial_in(&s_chRecByte)) {
-                SET_EVENT(&s_tReceivedEvevt);
-                if ('r' == s_chRecByte) {
-                    s_tState = RCV_L;
+            if (false != serial_in(&s_tCheck.chRecByte)) {
+                if (WAIT_EVENT(&s_tEchoCplEvevt)) {
+                    SET_EVENT(&s_tReceivedEvevt);
+                    s_chRecByte = s_tCheck.chRecByte;
+                }
+                if ('r' == s_tCheck.chRecByte) {
+                    s_tCheck.tState = RCV_L;
                 } else {
                     PRINT_CHECK_FSM();
                 }
             }
             break;
         case RCV_L:
-            if (false != serial_in(&s_chRecByte)) {
-                SET_EVENT(&s_tReceivedEvevt);
-                if ('l' == s_chRecByte) {
-                    s_tState = RCV_D;
+            if (false != serial_in(&s_tCheck.chRecByte)) {
+                if (WAIT_EVENT(&s_tEchoCplEvevt)) {
+                    SET_EVENT(&s_tReceivedEvevt);
+                    s_chRecByte = s_tCheck.chRecByte;
+                }
+                if ('l' == s_tCheck.chRecByte) {
+                    s_tCheck.tState = RCV_D;
                 } else {
                     PRINT_CHECK_FSM();
                 }
             }
             break;
         case RCV_D:
-            if (false != serial_in(&s_chRecByte)) {
-                SET_EVENT(&s_tReceivedEvevt);
-                if ('d' == s_chRecByte) {
+            if (false != serial_in(&s_tCheck.chRecByte)) {
+                if (WAIT_EVENT(&s_tEchoCplEvevt)) {
+                    SET_EVENT(&s_tReceivedEvevt);
+                    s_chRecByte = s_tCheck.chRecByte;
+                }
+                if ('d' == s_tCheck.chRecByte) {
                     PRINT_CHECK_FSM();
                     return fsm_rt_cpl;
                 } else {
@@ -236,6 +256,7 @@ static fsm_rt_t check(void)
     }
     return fsm_rt_on_going;
 }
+
 
 #define PRINT_RESET_FSM() \
 do {\
