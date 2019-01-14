@@ -56,14 +56,12 @@ static fsm_rt_t task_print(void);
 static fsm_rt_t task_echo(void);
 static event_t s_tPrintEvevt;
 static event_t s_tReceivedEvevt;
-static event_t s_tNoEchoEvevt;
 static uint8_t s_chRecByte;
 int main(void)
 {
     system_init();
-    INIT_EVENT(&s_tPrintEvevt,RESET,AUTO);
+    INIT_EVENT(&s_tPrintEvevt,RESET,MANUAL);
     INIT_EVENT(&s_tReceivedEvevt,RESET,AUTO);
-    INIT_EVENT(&s_tNoEchoEvevt,RESET,MANUAL);
     while(1) {
         breath_led();
         task_check();
@@ -75,35 +73,32 @@ int main(void)
 do { \
     s_tState = START; \
 } while(0)
-static fsm_rt_t task_echo()
+static fsm_rt_t task_echo(void)
 {
     static enum {
         START = 0,
-        RECEIVED,
-//        ECHO,
+        WAIT_RECEIVED,
+//        WAIT_PRINT,
         PRINT,
     } s_tState = START;
     switch (s_tState) {
         case START:
-            s_tState = RECEIVED;
+            s_tState = WAIT_RECEIVED;
             //break;
-        case RECEIVED:
-            if (WAIT_EVENT(&s_tReceivedEvevt) ) {
+        case WAIT_RECEIVED:
+            if (WAIT_EVENT(&s_tReceivedEvevt)) {
                 s_tState = PRINT;
             }
             break;
-//        case ECHO:
-//            if (!WAIT_EVENT(&s_tNoEchoEvevt)) {
+//        case WAIT_PRINT:
+//            if (WAIT_EVENT(&s_tPrintEvevt)) {
+//                break;
+//            } else {
 //                s_tState = PRINT;
 //            }
-//            break;
-//        case PRINT:
-//            if (serial_out(s_chRecByte)) {
-//                TASK_ECHO_RESET_FSM();
-//                return fsm_rt_cpl;
-//            }
+//            //break;
         case PRINT:
-            if (WAIT_EVENT(&s_tNoEchoEvevt)) {
+            if (WAIT_EVENT(&s_tPrintEvevt)) {
                 break;
             } else {
                 if (serial_out(s_chRecByte)) {
@@ -111,6 +106,7 @@ static fsm_rt_t task_echo()
                     return fsm_rt_cpl;
                 }
             }
+            
     }
     return fsm_rt_on_going;
 }
@@ -155,13 +151,12 @@ static fsm_rt_t task_print(void)
             //break;
         case WATING:
             if (WAIT_EVENT(&s_tPrintEvevt)) {
-                SET_EVENT(&s_tNoEchoEvevt);
                 s_tState = PRINT;
             }
             break;
         case PRINT:
             if (fsm_rt_cpl == print()) {
-                RESET_EVENT(&s_tNoEchoEvevt);
+                RESET_EVENT(&s_tPrintEvevt);
                 TASK_PRINT_RESET_FSM();
                 return fsm_rt_cpl;
             }
