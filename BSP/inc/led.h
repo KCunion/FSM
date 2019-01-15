@@ -17,10 +17,10 @@
 #define IS_KEY_REST_UP()	    (GPIOC ->IDR >> 13 & 1)
 #define IS_KEY_WEAKUP_DOWN()	(!(GPIOA ->IDR & 1))            //PA0
 #define IS_KEY_WEAKUP_UP()	    (GPIOA ->IDR &1 )
-#define IS_KEY1_DOWN()	        (!(GPIOB ->IDR >> 10&1))        //PB10
-#define IS_KEY1_UP()	        (GPIOB ->IDR >> 10&1)
-#define IS_KEY2_DOWN()	        (!(GPIOB ->IDR >> 11&1))        //PB11
-#define IS_KEY2_UP()	        (GPIOB ->IDR >> 11&1)
+#define IS_KEY1_DOWN()	        (!(GPIOB ->IDR >> 10 & 1))        //PB10
+#define IS_KEY1_UP()	        (GPIOB ->IDR >> 10 & 1)
+#define IS_KEY2_DOWN()	        (!(GPIOB ->IDR >> 11 & 1))        //PB11
+#define IS_KEY2_UP()	        (GPIOB ->IDR >> 11 & 1)
 
 extern void gpio_init(void);
 #endif

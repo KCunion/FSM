@@ -2,7 +2,6 @@
 
 void gpio_init(void)
 {
-    
     RCC ->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_IOPCEN; 	 
     GPIOA ->CRL &= 0XFFFFFFF0;
     GPIOA ->CRH &= 0X0FFFFFFF;

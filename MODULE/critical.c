@@ -1,8 +1,9 @@
 #include "sys.h"
+#include "critical.h"
 
 bool enter_cricital_sector(critical_sector_t *ptCritical)
 {
-    if ((ptCritical != NULL) && false == ptCritical ->bLocked) {
+    if ((NULL != ptCritical) && false == ptCritical ->bLocked) {
         ptCritical ->bLocked = true;
         return true;
     }
@@ -11,14 +12,14 @@ bool enter_cricital_sector(critical_sector_t *ptCritical)
 
 void leave_cricital_sector(critical_sector_t *ptCritical)
 {
-    if (ptCritical != NULL) {
+    if (NULL != ptCritical) {
         ptCritical ->bLocked = false;
     }
 }
 
 void init_cricital_sector(critical_sector_t *ptCritical)
 {
-    if (ptCritical != NULL) {
+    if (NULL != ptCritical) {
         ptCritical ->bLocked = false;
     }
 }

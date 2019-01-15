@@ -3,16 +3,16 @@
 
 void set_event(event_t *ptEvent)
 {
-    if (ptEvent != NULL) {
+    if (NULL != ptEvent) {
         ptEvent->bIsSet = true;
     }
 }
 
-bool wait_event(event_t *tEvent)
+bool wait_event(event_t *ptEvent)
 {
-    if ((tEvent != NULL) && false != tEvent->bIsSet) {
-        if (false != tEvent->bAutoReset) {
-            tEvent->bIsSet = false;
+    if ((NULL != ptEvent) && false != ptEvent->bIsSet) {
+        if (false != ptEvent->bAutoReset) {
+            ptEvent->bIsSet = false;
         }
         return true;
     }
@@ -21,14 +21,14 @@ bool wait_event(event_t *tEvent)
 
 void reset_event(event_t *ptEvent)
 {
-    if (ptEvent != NULL) {
+    if (NULL != ptEvent) {
         ptEvent->bIsSet = false;
     }
 }
 
 void init_event(event_t *ptEvent,bool bValue,bool bManual)
 {
-    if (ptEvent != NULL) {
+    if (NULL != ptEvent) {
         ptEvent->bAutoReset = !bManual;
         ptEvent->bIsSet = bValue;
     }

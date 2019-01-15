@@ -48,22 +48,23 @@ typedef enum {
 } fsm_rt_t;
 //! @}
 
-
 static fsm_rt_t print(void);
 static fsm_rt_t check(void);
 static fsm_rt_t task_check(void);
 static fsm_rt_t task_print(void);
 static fsm_rt_t task_echo(void);
+
 static event_t s_tPrintEvevt;
-static event_t s_tReceivedEvevt;
 static event_t s_tEchoCplEvevt;
+static mailbox_t s_tEchoMailbox;
 static uint8_t s_chEchoByte;
+
 int main(void)
 {
     system_init();
     INIT_EVENT(&s_tPrintEvevt,RESET,MANUAL);
-    INIT_EVENT(&s_tReceivedEvevt,RESET,AUTO);
     INIT_EVENT(&s_tEchoCplEvevt,SET,AUTO);
+    INIT_MAIL(&s_tEchoMailbox);
     while(1) {
         breath_led();
         task_check();
@@ -73,37 +74,33 @@ int main(void)
 }
 #define TASK_ECHO_RESET_FSM() \
 do { \
-    s_tState = START; \
+    s_tEcho.tState = START; \
 } while(0)
 static fsm_rt_t task_echo(void)
 {
-    static enum {
-        START = 0,
-        WAIT_RECEIVED,
-//        WAIT_PRINT,
-        PRINT,
-    } s_tState = START;
-    switch (s_tState) {
+    static struct {
+        enum {
+            START = 0,
+            WAIT_RECEIVED,
+            PRINT,
+        } tState;
+        uint8_t *pchEchoByte;
+    } s_tEcho = {START};
+    switch (s_tEcho.tState) {
         case START:
-            s_tState = WAIT_RECEIVED;
+            s_tEcho.tState = WAIT_RECEIVED;
             //break;
         case WAIT_RECEIVED:
-            if (WAIT_EVENT(&s_tReceivedEvevt)) {
-                s_tState = PRINT;
+            s_tEcho.pchEchoByte = (uint8_t *)OPEN_MAIL(&s_tEchoMailbox);
+            if (NULL != s_tEcho.pchEchoByte) {
+                s_tEcho.tState = PRINT;
             }
             break;
-//        case WAIT_PRINT:
-//            if (WAIT_EVENT(&s_tPrintEvevt)) {
-//                break;
-//            } else {
-//                s_tState = PRINT;
-//            }
-//            //break;
         case PRINT:
             if (WAIT_EVENT(&s_tPrintEvevt)) {
                 break;
             } else {
-                if (serial_out(s_chEchoByte)) {
+                if (serial_out(*s_tEcho.pchEchoByte)) {
                     SET_EVENT(&s_tEchoCplEvevt);
                     TASK_ECHO_RESET_FSM();
                     return fsm_rt_cpl;
@@ -191,8 +188,8 @@ static fsm_rt_t check(void)
         case RCV_W:
             if (false != serial_in(&s_tCheck.chRecByte)) {
                 if (WAIT_EVENT(&s_tEchoCplEvevt)) {
-                    SET_EVENT(&s_tReceivedEvevt);
                     s_chEchoByte = s_tCheck.chRecByte;
+                    POST_MAIL(&s_tEchoMailbox,&s_chEchoByte);
                 }
                 if ('w' == s_tCheck.chRecByte) {
                     s_tCheck.tState = RCV_O;
@@ -204,8 +201,8 @@ static fsm_rt_t check(void)
         case RCV_O:
             if (false != serial_in(&s_tCheck.chRecByte)) {
                 if (WAIT_EVENT(&s_tEchoCplEvevt)) {
-                    SET_EVENT(&s_tReceivedEvevt);
                     s_chEchoByte = s_tCheck.chRecByte;
+                    POST_MAIL(&s_tEchoMailbox,&s_chEchoByte);
                 }
                 if ('o' == s_tCheck.chRecByte) {
                     s_tCheck.tState = RCV_R;
@@ -217,8 +214,8 @@ static fsm_rt_t check(void)
         case RCV_R:
             if (false != serial_in(&s_tCheck.chRecByte)) {
                 if (WAIT_EVENT(&s_tEchoCplEvevt)) {
-                    SET_EVENT(&s_tReceivedEvevt);
                     s_chEchoByte = s_tCheck.chRecByte;
+                    POST_MAIL(&s_tEchoMailbox,&s_chEchoByte);
                 }
                 if ('r' == s_tCheck.chRecByte) {
                     s_tCheck.tState = RCV_L;
@@ -230,8 +227,8 @@ static fsm_rt_t check(void)
         case RCV_L:
             if (false != serial_in(&s_tCheck.chRecByte)) {
                 if (WAIT_EVENT(&s_tEchoCplEvevt)) {
-                    SET_EVENT(&s_tReceivedEvevt);
                     s_chEchoByte = s_tCheck.chRecByte;
+                    POST_MAIL(&s_tEchoMailbox,&s_chEchoByte);
                 }
                 if ('l' == s_tCheck.chRecByte) {
                     s_tCheck.tState = RCV_D;
@@ -243,8 +240,8 @@ static fsm_rt_t check(void)
         case RCV_D:
             if (false != serial_in(&s_tCheck.chRecByte)) {
                 if (WAIT_EVENT(&s_tEchoCplEvevt)) {
-                    SET_EVENT(&s_tReceivedEvevt);
                     s_chEchoByte = s_tCheck.chRecByte;
+                    POST_MAIL(&s_tEchoMailbox,&s_chEchoByte);
                 }
                 if ('d' == s_tCheck.chRecByte) {
                     PRINT_CHECK_FSM();

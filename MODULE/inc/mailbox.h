@@ -1,7 +1,8 @@
-#ifndef __CRITICAL_H
-#define __CRITICAL_H
+#ifndef __MAILBOX_H
+#define __MAILBOX_H
 #include "stdbool.h"
 #include "event.h"
+
 typedef struct {
     event_t tSealed;
     void *pTarget;
@@ -11,4 +12,7 @@ typedef struct {
 #define OPEN_MAIL(__MAIL)           open_mail(__MAIL)
 #define INIT_MAIL(__MAIL)           init_mail(__MAIL)
 
+extern void init_mail(mailbox_t *ptMail);
+extern void *open_mail(mailbox_t *ptMail);
+extern void post_mail(mailbox_t *ptMail,void *pTarget);
 #endif

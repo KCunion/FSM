@@ -8,6 +8,7 @@
 #include "uart.h"
 #include "event.h"
 #include "critical.h"
+#include "mailbox.h"
 
 extern void system_init(void);
 #endif

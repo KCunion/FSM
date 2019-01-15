@@ -24,8 +24,8 @@ void uart_init(void)
 
 bool serial_out(uint8_t chByte)
 {
-    if ((UART1->CSR & ((uint16_t)0x0001)) != 0) {
-        UART1->TDR = (chByte & (uint16_t)0x00FF);      
+    if ((UART1 ->CSR & ((uint16_t)0x0001)) != 0) {
+        UART1 ->TDR = (chByte & (uint16_t)0x00FF);      
         return true;
     }
     return false;
@@ -33,9 +33,9 @@ bool serial_out(uint8_t chByte)
 
 bool serial_in(uint8_t *pchByte)
 {
-    if ((UART1->CSR & ((uint16_t)0x0002)) != 0) {
+    if ((UART1 ->CSR & ((uint16_t)0x0002)) != 0) {
         if (pchByte != NULL) {
-            *pchByte = UART1->RDR & (uint8_t)0xFF;
+            *pchByte = UART1 ->RDR & (uint8_t)0xFF;
             return true;
         }
     }
