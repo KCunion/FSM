@@ -3,9 +3,11 @@
 
 bool enter_cricital_sector(critical_sector_t *ptCritical)
 {
-    if ((NULL != ptCritical) && false == ptCritical ->bLocked) {
-        ptCritical ->bLocked = true;
-        return true;
+    if (NULL != ptCritical) {
+        if (false == ptCritical ->bLocked) {
+            ptCritical ->bLocked = true;
+            return true;
+        }
     }
     return false;
 }

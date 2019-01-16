@@ -11,8 +11,10 @@ void init_mail(mailbox_t *ptMail)
 
 void *open_mail(mailbox_t *ptMail)
 {
-    if ((NULL != ptMail) && WAIT_EVENT(&ptMail ->tSealed)) {
-        return ptMail->pTarget;
+    if (NULL != ptMail) {
+        if (WAIT_EVENT(&ptMail ->tSealed)) {
+            return ptMail->pTarget;
+        }
     }
     return NULL;
 }

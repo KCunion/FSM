@@ -10,9 +10,11 @@ void set_event(event_t *ptEvent)
 
 bool wait_event(event_t *ptEvent)
 {
-    if ((NULL != ptEvent) && false != ptEvent->bIsSet) {
-        if (false != ptEvent->bAutoReset) {
-            ptEvent->bIsSet = false;
+    if (NULL != ptEvent) {
+        if (false != ptEvent->bIsSet) {
+            if (false != ptEvent->bAutoReset) {
+                ptEvent->bIsSet = false;
+            }
         }
         return true;
     }
