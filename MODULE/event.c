@@ -15,8 +15,8 @@ bool wait_event(event_t *ptEvent)
             if (false != ptEvent->bAutoReset) {
                 ptEvent->bIsSet = false;
             }
+            return true;
         }
-        return true;
     }
     return false;
 }
