@@ -48,7 +48,12 @@ typedef enum {
 } fsm_rt_t;
 //! @}
 
-static fsm_rt_t print_string(uint8_t *pchString);
+typedef struct {
+    uint8_t* pchString;
+    uint32_t wLength;
+}print_str_t;
+
+static fsm_rt_t print_string(uint8_t *pchString,uint8_t chLength);
 static fsm_rt_t print_apple(void);
 static fsm_rt_t print_orange(void);
 static fsm_rt_t print_world(void);
@@ -64,7 +69,7 @@ int main(void)
     }
 }
 
-static fsm_rt_t print_string(uint8_t *pchString)
+static fsm_rt_t print_string(uint8_t *pchString,uint8_t chLength)
 {
     static enum {
         START = 0,
