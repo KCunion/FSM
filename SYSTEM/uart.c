@@ -11,13 +11,13 @@ void uart_init(void)
 
     wtempBaud = (96000000 / 16) / (9600);
     UART1 ->FRA =(96000000 / 16) % (9600);
-
     UART1 ->BRR = wtempBaud;
     UART1 ->CCR |=0X30;
 
     UART1 ->GCR = 0X19;
     UART1 ->CCR |= 1 << 5;
     UART1 ->IER = 0X2;
+    
     GPIOA ->CRH &= 0XFFFFF00F;
     GPIOA ->CRH |= 0X000008B0;    
 }

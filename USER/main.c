@@ -50,14 +50,17 @@ typedef enum {
 
 typedef struct {
     uint8_t* pchString;
-    uint32_t wLength;
+    uint16_t hwLength;
+    uint16_t hwIncrease;
 }print_str_t;
 
-static fsm_rt_t print_string(uint8_t *pchString,uint8_t chLength);
+static fsm_rt_t print_string(print_str_t* tPrintStr);
 static fsm_rt_t print_apple(void);
 static fsm_rt_t print_orange(void);
 static fsm_rt_t print_world(void);
- 
+static print_str_t s_tPrintApple;
+static print_str_t s_tPrintOrange;
+static print_str_t s_tPrintWorld;
 int main(void)
 {
     system_init();
@@ -69,37 +72,115 @@ int main(void)
     }
 }
 
-static fsm_rt_t print_string(uint8_t *pchString,uint8_t chLength)
+#define PRINT_RESET_FSM() \
+do {\
+    s_tState = START;\
+} while(0)
+static fsm_rt_t print_string(print_str_t* ptPrintStr)
 {
     static enum {
         START = 0,
         PRINT,
         WATING
     } s_tState = START;
+    if (ptPrintStr == NULL) {
+        return fsm_rt_err;
+    }
     switch (s_tState) {
         case START:
+            s_tState = WATING;
+            //break;
+        case WATING:
+            if (ptPrintStr->hwLength > 0 && ptPrintStr->hwIncrease < ptPrintStr->hwLength) {
+                s_tState = PRINT;
+            }
+            break;
+        case PRINT:
+            if (serial_out(*(ptPrintStr->pchString + ptPrintStr->hwIncrease))) {
+                if (++ ptPrintStr->hwIncrease >= ptPrintStr->hwLength) {
+                    PRINT_RESET_FSM();
+                    return fsm_rt_cpl;
+                }
+            }
+    }
+    return fsm_rt_on_going;
+ }
+static uint8_t s_chApple[] = "apple\r\n"; 
+ #define PRINT_APPLE_RESET_FSM() \
+do {\
+    s_tState = START;\
+} while(0)
+static fsm_rt_t print_apple(void)
+{
+    static enum {
+        START = 0,
+        PRINT
+    } s_tState = START;
+    switch (s_tState) {
+        case START:
+            s_tPrintApple.pchString = s_chApple;
+            s_tPrintApple.hwLength = sizeof(s_chApple);
+            s_tPrintApple.hwIncrease = 0;
             s_tState = PRINT;
             //break;
         case PRINT:
-            
-            break;
-        case WATING:
-        
-            break;
+            if (fsm_rt_cpl == print_string(&s_tPrintApple)) {
+                PRINT_APPLE_RESET_FSM();
+                return fsm_rt_cpl;
+            }
     }
-    
-    return fsm_rt_cpl;
+    return fsm_rt_on_going;
 }
-static fsm_rt_t print_apple(void)
-{
-    return fsm_rt_cpl;
-}
+static uint8_t s_chOrange[] = "orange\r\n"; 
+#define PRINT_ORANGE_RESET_FSM() \
+do {\
+    s_tState = START;\
+} while(0)
 static fsm_rt_t print_orange(void)
 {
-    return fsm_rt_cpl;
+    static enum {
+        START = 0,
+        PRINT
+    } s_tState = START;
+    switch (s_tState) {
+        case START:
+            s_tPrintOrange.pchString = s_chOrange;
+            s_tPrintOrange.hwLength = sizeof(s_chOrange);
+            s_tPrintOrange.hwIncrease = 0;
+            s_tState = PRINT;
+            //break;
+        case PRINT:
+            if (fsm_rt_cpl == print_string(&s_tPrintOrange)) {
+                PRINT_APPLE_RESET_FSM();
+                return fsm_rt_cpl;
+            }
+    }
+    return fsm_rt_on_going;
 }
+static uint8_t s_chWorld[] = "world\r\n"; 
+#define PRINT_WORLD_RESET_FSM() \
+do {\
+    s_tState = START;\
+} while(0)
 static fsm_rt_t print_world(void)
 {
-    return fsm_rt_cpl;
+    static enum {
+        START = 0,
+        PRINT
+    } s_tState = START;
+    switch (s_tState) {
+        case START:
+            s_tPrintWorld.pchString = s_chWorld;
+            s_tPrintWorld.hwLength = sizeof(s_chWorld);
+            s_tPrintWorld.hwIncrease = 0;
+            s_tState = PRINT;
+            //break;
+        case PRINT:
+            if (fsm_rt_cpl == print_string(&s_tPrintWorld)) {
+                PRINT_APPLE_RESET_FSM();
+                return fsm_rt_cpl;
+            }
+    }
+    return fsm_rt_on_going;
 }
 

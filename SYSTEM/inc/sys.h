@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "stdint.h"
 #include "stdbool.h"
+#include "string.h"
 #include "led.h"
 #include "uart.h"
 #include "event.h"
