@@ -4,8 +4,6 @@
 #define _BV(__N)    ((uint32_t)1<<(__N))
 #define TOP         (0x01FF)
 
-
-
 /*! \brief set the 16-level led gradation
  *! \param hwLevel gradation
  *! \return none
@@ -48,11 +46,6 @@ typedef enum {
 } fsm_rt_t;
 //! @}
 
-typedef struct {
-    uint8_t* pchString;
-    uint16_t hwLength;
-    uint16_t hwIncrease;
-}print_str_t;
 
 static fsm_rt_t print_string(print_str_t* tPrintStr);
 static fsm_rt_t print_apple(void);
@@ -63,6 +56,7 @@ static print_str_t s_tPrintOrange;
 static print_str_t s_tPrintWorld;
 int main(void)
 {
+    uint16_t hwTemp = sizeof(print_str_t);
     system_init();
     while(1) {
         breath_led();
@@ -88,25 +82,33 @@ static fsm_rt_t print_string(print_str_t* ptPrintStr)
     }
     switch (s_tState) {
         case START:
-            s_tState = WATING;
-            //break;
-        case WATING:
-            if (ptPrintStr->hwLength > 0 && ptPrintStr->hwIncrease < ptPrintStr->hwLength) {
-                s_tState = PRINT;
+            if (print_start == GET_PRINT_STR_STATE(ptPrintStr)) {
+                SET_PRINT_STR_STATE(ptPrintStr, print_on);
+                s_tState = WATING;
             }
             break;
+        case WATING:
+            if (print_on == GET_PRINT_STR_STATE(ptPrintStr)) {
+                s_tState = PRINT;
+            } else {
+                break;
+            }
+            //break;
         case PRINT:
-            if (serial_out(*(ptPrintStr->pchString + ptPrintStr->hwIncrease))) {
-                if (++ ptPrintStr->hwIncrease >= ptPrintStr->hwLength) {
+            if (serial_out(*ptPrintStr->pchString)) {
+                if ('\0' == *(++ ptPrintStr->pchString)) {
+                    SET_PRINT_STR_STATE(ptPrintStr, print_cpl);
                     PRINT_RESET_FSM();
                     return fsm_rt_cpl;
+                } else {
+                    s_tState = WATING;
                 }
             }
     }
     return fsm_rt_on_going;
  }
-static uint8_t s_chApple[] = "apple\r\n"; 
- #define PRINT_APPLE_RESET_FSM() \
+
+#define PRINT_APPLE_RESET_FSM() \
 do {\
     s_tState = START;\
 } while(0)
@@ -116,14 +118,15 @@ static fsm_rt_t print_apple(void)
         START = 0,
         PRINT
     } s_tState = START;
+    
     switch (s_tState) {
         case START:
-            s_tPrintApple.pchString = s_chApple;
-            s_tPrintApple.hwLength = sizeof(s_chApple);
-            s_tPrintApple.hwIncrease = 0;
-            s_tState = PRINT;
-            //break;
+            if (PRINT_STR_INIT(&s_tPrintApple,(int8_t*)"apple\r\n")) {
+                s_tState = PRINT;
+            }
+            break;
         case PRINT:
+            
             if (fsm_rt_cpl == print_string(&s_tPrintApple)) {
                 PRINT_APPLE_RESET_FSM();
                 return fsm_rt_cpl;
@@ -131,7 +134,7 @@ static fsm_rt_t print_apple(void)
     }
     return fsm_rt_on_going;
 }
-static uint8_t s_chOrange[] = "orange\r\n"; 
+
 #define PRINT_ORANGE_RESET_FSM() \
 do {\
     s_tState = START;\
@@ -144,11 +147,10 @@ static fsm_rt_t print_orange(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            s_tPrintOrange.pchString = s_chOrange;
-            s_tPrintOrange.hwLength = sizeof(s_chOrange);
-            s_tPrintOrange.hwIncrease = 0;
-            s_tState = PRINT;
-            //break;
+            if (PRINT_STR_INIT(&s_tPrintOrange,(int8_t*)"orange\r\n")) {
+                s_tState = PRINT;
+            }
+            break;
         case PRINT:
             if (fsm_rt_cpl == print_string(&s_tPrintOrange)) {
                 PRINT_APPLE_RESET_FSM();
@@ -157,7 +159,7 @@ static fsm_rt_t print_orange(void)
     }
     return fsm_rt_on_going;
 }
-static uint8_t s_chWorld[] = "world\r\n"; 
+
 #define PRINT_WORLD_RESET_FSM() \
 do {\
     s_tState = START;\
@@ -170,11 +172,10 @@ static fsm_rt_t print_world(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            s_tPrintWorld.pchString = s_chWorld;
-            s_tPrintWorld.hwLength = sizeof(s_chWorld);
-            s_tPrintWorld.hwIncrease = 0;
-            s_tState = PRINT;
-            //break;
+            if (PRINT_STR_INIT(&s_tPrintWorld,(int8_t*)"world\r\n")) {
+                s_tState = PRINT;
+            }
+            break;
         case PRINT:
             if (fsm_rt_cpl == print_string(&s_tPrintWorld)) {
                 PRINT_APPLE_RESET_FSM();
