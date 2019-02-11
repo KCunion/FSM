@@ -23,6 +23,7 @@ typedef struct {
 extern void uart_init(void);
 extern bool serial_out(uint8_t chByte);
 extern bool serial_in(uint8_t *pchByte);
+
 extern bool print_str_init(print_str_t* ptPrint,int8_t* pchString);
 extern print_st_t get_print_str_state(print_str_t* ptPrint);
 extern bool set_print_str_state(print_str_t* ptPrint,print_st_t ptState);

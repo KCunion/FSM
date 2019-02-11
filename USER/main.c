@@ -121,12 +121,12 @@ static fsm_rt_t print_apple(void)
     
     switch (s_tState) {
         case START:
-            if (PRINT_STR_INIT(&s_tPrintApple,(int8_t*)"apple\r\n")) {
-                s_tState = PRINT;
+            if (!PRINT_STR_INIT(&s_tPrintApple,(int8_t*)"apple\r\n")) {
+                return fsm_rt_err;
             }
-            break;
+            s_tState = PRINT;
+            //break;
         case PRINT:
-            
             if (fsm_rt_cpl == print_string(&s_tPrintApple)) {
                 PRINT_APPLE_RESET_FSM();
                 return fsm_rt_cpl;
@@ -147,10 +147,11 @@ static fsm_rt_t print_orange(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (PRINT_STR_INIT(&s_tPrintOrange,(int8_t*)"orange\r\n")) {
-                s_tState = PRINT;
+            if (!PRINT_STR_INIT(&s_tPrintOrange,(int8_t*)"orange\r\n")) {
+                return fsm_rt_err;
             }
-            break;
+            s_tState = PRINT;
+            //break;
         case PRINT:
             if (fsm_rt_cpl == print_string(&s_tPrintOrange)) {
                 PRINT_APPLE_RESET_FSM();
@@ -172,10 +173,11 @@ static fsm_rt_t print_world(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (PRINT_STR_INIT(&s_tPrintWorld,(int8_t*)"world\r\n")) {
-                s_tState = PRINT;
+            if (!PRINT_STR_INIT(&s_tPrintWorld,(int8_t*)"world\r\n")) {
+                return fsm_rt_err;
             }
-            break;
+            s_tState = PRINT;
+            //break;
         case PRINT:
             if (fsm_rt_cpl == print_string(&s_tPrintWorld)) {
                 PRINT_APPLE_RESET_FSM();
