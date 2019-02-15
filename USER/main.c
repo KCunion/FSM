@@ -37,16 +37,6 @@ static void breath_led(void)
     set_led_gradation(ABS(s_nGray - (TOP >> 1)));
 }
 
-//! \name finit state machine state
-//! @{
-typedef enum {
-   fsm_rt_err          = -1,    //!< fsm error, error code can be get from other interface
-   fsm_rt_cpl          = 0,     //!< fsm complete
-   fsm_rt_on_going     = 1,     //!< fsm on-going
-} fsm_rt_t;
-//! @}
-
-
 static fsm_rt_t print_string(print_str_t* tPrintStr);
 static fsm_rt_t print_apple(void);
 static fsm_rt_t print_orange(void);
@@ -56,7 +46,6 @@ static print_str_t s_tPrintOrange;
 static print_str_t s_tPrintWorld;
 int main(void)
 {
-    uint16_t hwTemp = sizeof(print_str_t);
     system_init();
     while(1) {
         breath_led();
@@ -65,48 +54,6 @@ int main(void)
         print_world();
     }
 }
-
-#define PRINT_RESET_FSM() \
-do {\
-    s_tState = START;\
-} while(0)
-static fsm_rt_t print_string(print_str_t* ptPrintStr)
-{
-    static enum {
-        START = 0,
-        PRINT,
-        WATING
-    } s_tState = START;
-    if (ptPrintStr == NULL) {
-        return fsm_rt_err;
-    }
-    switch (s_tState) {
-        case START:
-            if (print_start == GET_PRINT_STR_STATE(ptPrintStr)) {
-                SET_PRINT_STR_STATE(ptPrintStr, print_on);
-                s_tState = WATING;
-            }
-            break;
-        case WATING:
-            if (print_on == GET_PRINT_STR_STATE(ptPrintStr)) {
-                s_tState = PRINT;
-            } else {
-                break;
-            }
-            //break;
-        case PRINT:
-            if (serial_out(*ptPrintStr->pchString)) {
-                if ('\0' == *(++ ptPrintStr->pchString)) {
-                    SET_PRINT_STR_STATE(ptPrintStr, print_cpl);
-                    PRINT_RESET_FSM();
-                    return fsm_rt_cpl;
-                } else {
-                    s_tState = WATING;
-                }
-            }
-    }
-    return fsm_rt_on_going;
- }
 
 #define PRINT_APPLE_RESET_FSM() \
 do {\

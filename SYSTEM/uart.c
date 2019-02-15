@@ -1,4 +1,4 @@
-#include "sys.h"
+#include "uart.h"
 
 void uart_init(void)
 {
@@ -32,14 +32,6 @@ bool print_str_init(print_str_t* ptPrint,int8_t* pchString)
     return false;
 }
 
-print_st_t get_print_str_state(print_str_t* ptPrint)
-{
-    if (ptPrint != NULL) {
-        return ptPrint->tStates;
-    }
-    return print_err;
-}
-
 bool set_print_str_state(print_str_t* ptPrint,print_st_t ptState)
 {
     if (ptPrint != NULL) {
@@ -48,6 +40,10 @@ bool set_print_str_state(print_str_t* ptPrint,print_st_t ptState)
     }
     return false;
 }
+/*! \brief serial out a byte
+ *! \param chByte Bytes to be sent
+ *! \return true or false
+ */
 bool serial_out(uint8_t chByte)
 {
     if ((UART1 ->CSR & ((uint16_t)0x0001)) != 0) {
@@ -56,7 +52,10 @@ bool serial_out(uint8_t chByte)
     }
     return false;
 }
-
+/*! \brief serial in a byte
+ *! \param pchByte Byte Pointers
+ *! \return true or false
+ */
 bool serial_in(uint8_t *pchByte)
 {
     if (pchByte != NULL) {
@@ -67,3 +66,35 @@ bool serial_in(uint8_t *pchByte)
     }
     return false;
 }
+
+/*! \brief print the string
+ *! \param ptPrintStr  string
+ *! \return fsm state
+ */
+fsm_rt_t print_string(print_str_t* ptPrintStr)
+{
+    if (ptPrintStr == NULL) {
+        return fsm_rt_err;
+    }
+    switch (ptPrintStr->tStates ) {
+        case print_err:
+            break;
+        case print_start:
+            SET_PRINT_STR_STATE(ptPrintStr, print_on);
+            //break;
+        case print_on:
+            if (serial_out(*ptPrintStr->pchString)) {
+                SET_PRINT_STR_STATE(ptPrintStr, print_cpl);
+            } else {
+                break;
+            }
+        case print_cpl:
+             if ('\0' == *(++ ptPrintStr->pchString)) {
+                    return fsm_rt_cpl;
+                } else {
+                    SET_PRINT_STR_STATE(ptPrintStr, print_on);
+                }
+            break;
+    }
+    return fsm_rt_on_going;
+ }
