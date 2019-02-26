@@ -37,7 +37,6 @@ static void breath_led(void)
     set_led_gradation(ABS(s_nGray - (TOP >> 1)));
 }
 
-static fsm_rt_t print_string(print_str_t* tPrintStr);
 static fsm_rt_t print_apple(void);
 static fsm_rt_t print_orange(void);
 static fsm_rt_t print_world(void);

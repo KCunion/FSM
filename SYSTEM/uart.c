@@ -76,8 +76,15 @@ fsm_rt_t print_string(print_str_t* ptPrintStr)
     if (ptPrintStr == NULL) {
         return fsm_rt_err;
     }
+    enum {
+        print_err = -1,
+        print_start = 0,
+        print_on ,
+        print_cpl
+    };
     switch (ptPrintStr->tStates ) {
         case print_err:
+            return fsm_rt_err;
             break;
         case print_start:
             SET_PRINT_STR_STATE(ptPrintStr, print_on);
