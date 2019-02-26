@@ -68,27 +68,27 @@ fsm_rt_t print_string(print_str_t* ptPrintStr)
         return fsm_rt_err;
     }
     enum {
-        print_start = 0,
-        print_on ,
-        print_cpl
+        START = 0,
+        PRINT_ON,
+        PRINT_CPL
     };
     
     switch (ptPrintStr->chStates ) {
-        case print_start:
-            ptPrintStr->chStates = print_on;
+        case START:
+            ptPrintStr->chStates = PRINT_ON;
             //break;
-        case print_on:
+        case PRINT_ON:
             if (serial_out(*ptPrintStr->pchString)) {
-                ptPrintStr->chStates = print_cpl;
+                ptPrintStr->chStates = PRINT_CPL;
             } else {
                 break;
             }
             //break;
-        case print_cpl:
+        case PRINT_CPL:
              if ('\0' == *(++ ptPrintStr->pchString)) {
                     return fsm_rt_cpl;
                 } else {
-                    ptPrintStr->chStates = print_on;
+                    ptPrintStr->chStates = PRINT_ON;
                 }
             break;
     }
