@@ -5,7 +5,6 @@
 #include "stdbool.h"
 #include "fsm.h"
 typedef enum {
-    print_err = -1,
     print_start = 0,
     print_on ,
     print_cpl
