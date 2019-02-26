@@ -24,22 +24,13 @@ void uart_init(void)
 bool print_str_init(print_str_t* ptPrint,int8_t* pchString)
 {
     if (ptPrint != NULL && pchString != NULL) {
-        ptPrint->tStates = print_start;
-//        ptPrint->hwPosition = 0;
+        ptPrint->chStates = 0;
         ptPrint->pchString = pchString;
         return true;
     }
     return false;
 }
 
-bool set_print_str_state(print_str_t* ptPrint,print_st_t ptState)
-{
-    if (ptPrint != NULL) {
-        ptPrint->tStates = ptState;
-        return true;
-    }
-    return false;
-}
 /*! \brief serial out a byte
  *! \param chByte Bytes to be sent
  *! \return true or false
@@ -76,13 +67,19 @@ fsm_rt_t print_string(print_str_t* ptPrintStr)
     if (ptPrintStr == NULL) {
         return fsm_rt_err;
     }
-    switch (ptPrintStr->tStates ) {
+    enum {
+        print_start = 0,
+        print_on ,
+        print_cpl
+    };
+    
+    switch (ptPrintStr->chStates ) {
         case print_start:
-            SET_PRINT_STR_STATE(ptPrintStr, print_on);
+            ptPrintStr->chStates = print_on;
             //break;
         case print_on:
             if (serial_out(*ptPrintStr->pchString)) {
-                SET_PRINT_STR_STATE(ptPrintStr, print_cpl);
+                ptPrintStr->chStates = print_cpl;
             } else {
                 break;
             }
@@ -91,7 +88,7 @@ fsm_rt_t print_string(print_str_t* ptPrintStr)
              if ('\0' == *(++ ptPrintStr->pchString)) {
                     return fsm_rt_cpl;
                 } else {
-                    SET_PRINT_STR_STATE(ptPrintStr, print_on);
+                    ptPrintStr->chStates = print_on;
                 }
             break;
     }
