@@ -38,7 +38,7 @@ static void breath_led(void)
 }
 
 static fsm_rt_t print_hello(void);
-static fsm_rt_t check_world(uint8_t chByte);
+static fsm_rt_t check_world(void);
 
 static fsm_rt_t task_check(void);
 static fsm_rt_t task_print(void);
@@ -72,7 +72,7 @@ static fsm_rt_t print_hello(void)
             s_tState = PRINT;
             //break;
         case PRINT:
-            if (fsm_rt_cpl == print_string(&s_tPrintHello)) {
+            if (fsm_rt_cpl == PRINT_STRING(&s_tPrintHello)) {
                 PRINT_HELLO_RESET_FSM();
                 return fsm_rt_cpl;
             }
@@ -84,21 +84,21 @@ static fsm_rt_t print_hello(void)
 do {\
     s_tState = START;\
 } while(0)
-static fsm_rt_t check_world(uint8_t chByte)
+static fsm_rt_t check_world(void)
 {
     static enum {
         START = 0,
-        PRINT
+        CHECK
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (!PRINT_STR_INIT(&s_tCheckWorld,(int8_t*)"world\r\n")) {
+            if (!CHECK_STR_INIT(&s_tCheckWorld,(int8_t*)"world\r\n")) {
                 return fsm_rt_err;
             }
-            s_tState = PRINT;
+            s_tState = CHECK;
             //break;
-        case PRINT:
-            if (fsm_rt_cpl == print_string(&s_tCheckWorld)) {
+        case CHECK:
+            if (fsm_rt_cpl == CHECK_STRING(&s_tCheckWorld)) {
                 CHECK_WORLD_RESET_FSM();
                 return fsm_rt_cpl;
             }
@@ -106,11 +106,48 @@ static fsm_rt_t check_world(uint8_t chByte)
     return fsm_rt_on_going;
 }
 
+#define TASK_CHECK_RESET_FSM() \
+do {\
+    s_tState = START;\
+} while(0)
 static fsm_rt_t task_check(void)
 {
-
+    static enum {
+        START = 0,
+        PRINT
+    } s_tState = START;
+    switch (s_tState) {
+        case START:
+            s_tState = PRINT;
+            //break;
+        case PRINT:
+            if (fsm_rt_cpl == check_world()) {
+                TASK_CHECK_RESET_FSM();
+                return fsm_rt_cpl;
+            }
+    }
+    return fsm_rt_on_going;    
 }
+
+#define TASK_PRINT_RESET_FSM() \
+do {\
+    s_tState = START;\
+} while(0)
 static fsm_rt_t task_print(void)
 {
-
+    static enum {
+        START = 0,
+        CHECK
+    } s_tState = START;
+    switch (s_tState) {
+        case START:
+            s_tState = CHECK;
+            //break;
+        case CHECK:
+            if (fsm_rt_cpl == print_hello()) {
+                TASK_PRINT_RESET_FSM();
+                return fsm_rt_cpl;
+            }
+    }
+    return fsm_rt_on_going;
 }

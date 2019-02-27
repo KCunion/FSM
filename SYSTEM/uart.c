@@ -21,15 +21,6 @@ void uart_init(void)
     GPIOA ->CRH &= 0XFFFFF00F;
     GPIOA ->CRH |= 0X000008B0;    
 }
-bool print_str_init(print_str_t* ptPrint,int8_t* pchString)
-{
-    if (ptPrint != NULL && pchString != NULL) {
-        ptPrint->chStates = 0;
-        ptPrint->pchString = pchString;
-        return true;
-    }
-    return false;
-}
 
 /*! \brief serial out a byte
  *! \param chByte Bytes to be sent
@@ -54,6 +45,16 @@ bool serial_in(uint8_t *pchByte)
             *pchByte = UART1 ->RDR & (uint8_t)0xFF;
             return true;
         }
+    }
+    return false;
+}
+
+bool print_str_init(print_str_t* ptPRN,int8_t* pchString)
+{
+    if (ptPRN != NULL && pchString != NULL) {
+        ptPRN->chStates = 0;
+        ptPRN->pchString = pchString;
+        return true;
     }
     return false;
 }
@@ -99,7 +100,60 @@ fsm_rt_t print_string(print_str_t *ptPRN)
     return fsm_rt_on_going;
  }
 
+bool check_str_init(check_str_t* ptCHK,int8_t* pchString)
+{
+    if (ptCHK != NULL && pchString != NULL) {
+        ptCHK->bFlag = false;
+        ptCHK->chStates = 0;
+        ptCHK->pchString = pchString;
+        return true;
+    }
+    return false;
+}
+
+#define CHECK_STRING_RESET_FSM() \
+do {\
+    ptCHK->chStates = START;\
+} while(0)
 fsm_rt_t check_string(check_str_t *ptCHK)
 {
-
+    if (ptCHK == NULL) {
+        return fsm_rt_err;
+    }
+    enum {
+        START = 0,
+        CHECK_EMPTY,
+        RECEIVE,
+        CHECK_ON
+    };
+    switch (ptCHK->chStates) {
+        case START:
+            ptCHK->chStates = CHECK_EMPTY;
+            //break;
+        case CHECK_EMPTY:
+            if ('\0' == *ptCHK->pchString) {
+                CHECK_STRING_RESET_FSM();
+                return fsm_rt_cpl;
+            } else {
+                ptCHK->chStates = RECEIVE;
+            }
+            //break;
+        case RECEIVE:
+            if (serial_in(&ptCHK->chByte)) {
+                ptCHK->chStates = CHECK_ON;
+            } else {
+                break;
+            }
+            //break;
+        case CHECK_ON:
+            if (*ptCHK->pchString == ptCHK->chByte) {
+                ptCHK->pchString ++;
+                ptCHK->chStates = CHECK_EMPTY;
+            } else {
+                ptCHK->bFlag = false;
+                CHECK_STRING_RESET_FSM();
+                return fsm_rt_cpl;
+            }
+    }
+    return fsm_rt_on_going;
 }
