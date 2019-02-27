@@ -37,55 +37,28 @@ static void breath_led(void)
     set_led_gradation(ABS(s_nGray - (TOP >> 1)));
 }
 
-static fsm_rt_t print_apple(void);
-static fsm_rt_t print_orange(void);
-static fsm_rt_t print_world(void);
-static print_str_t s_tPrintApple;
-static print_str_t s_tPrintOrange;
-static print_str_t s_tPrintWorld;
+static fsm_rt_t print_hello(void);
+static fsm_rt_t check_world(uint8_t chByte);
+
+static fsm_rt_t task_check(void);
+static fsm_rt_t task_print(void);
+static print_str_t s_tPrintHello;
+static check_str_t s_tCheckWorld;
 int main(void)
 {
     system_init();
     while(1) {
         breath_led();
-        print_apple();
-        print_orange();
-        print_world();
+        task_check();
+        task_print();
     }
 }
 
-#define PRINT_APPLE_RESET_FSM() \
+#define PRINT_HELLO_RESET_FSM() \
 do {\
     s_tState = START;\
 } while(0)
-static fsm_rt_t print_apple(void)
-{
-    static enum {
-        START = 0,
-        PRINT
-    } s_tState = START;
-    
-    switch (s_tState) {
-        case START:
-            if (!PRINT_STR_INIT(&s_tPrintApple,(int8_t*)"apple\r\n")) {
-                return fsm_rt_err;
-            }
-            s_tState = PRINT;
-            //break;
-        case PRINT:
-            if (fsm_rt_cpl == print_string(&s_tPrintApple)) {
-                PRINT_APPLE_RESET_FSM();
-                return fsm_rt_cpl;
-            }
-    }
-    return fsm_rt_on_going;
-}
-
-#define PRINT_ORANGE_RESET_FSM() \
-do {\
-    s_tState = START;\
-} while(0)
-static fsm_rt_t print_orange(void)
+static fsm_rt_t print_hello(void)
 {
     static enum {
         START = 0,
@@ -93,25 +66,25 @@ static fsm_rt_t print_orange(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (!PRINT_STR_INIT(&s_tPrintOrange,(int8_t*)"orange\r\n")) {
+            if (!PRINT_STR_INIT(&s_tPrintHello,(int8_t*)"hello\r\n")) {
                 return fsm_rt_err;
             }
             s_tState = PRINT;
             //break;
         case PRINT:
-            if (fsm_rt_cpl == print_string(&s_tPrintOrange)) {
-                PRINT_APPLE_RESET_FSM();
+            if (fsm_rt_cpl == print_string(&s_tPrintHello)) {
+                PRINT_HELLO_RESET_FSM();
                 return fsm_rt_cpl;
             }
     }
     return fsm_rt_on_going;
 }
 
-#define PRINT_WORLD_RESET_FSM() \
+#define CHECK_WORLD_RESET_FSM() \
 do {\
     s_tState = START;\
 } while(0)
-static fsm_rt_t print_world(void)
+static fsm_rt_t check_world(uint8_t chByte)
 {
     static enum {
         START = 0,
@@ -119,17 +92,25 @@ static fsm_rt_t print_world(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (!PRINT_STR_INIT(&s_tPrintWorld,(int8_t*)"world\r\n")) {
+            if (!PRINT_STR_INIT(&s_tCheckWorld,(int8_t*)"world\r\n")) {
                 return fsm_rt_err;
             }
             s_tState = PRINT;
             //break;
         case PRINT:
-            if (fsm_rt_cpl == print_string(&s_tPrintWorld)) {
-                PRINT_APPLE_RESET_FSM();
+            if (fsm_rt_cpl == print_string(&s_tCheckWorld)) {
+                CHECK_WORLD_RESET_FSM();
                 return fsm_rt_cpl;
             }
     }
     return fsm_rt_on_going;
 }
 
+static fsm_rt_t task_check(void)
+{
+
+}
+static fsm_rt_t task_print(void)
+{
+
+}

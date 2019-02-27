@@ -64,12 +64,12 @@ bool serial_in(uint8_t *pchByte)
  */
 #define PRINT_STRING_RESET_FSM() \
 do {\
-    ptPrintStr->chStates = START;\
+    ptPRN->chStates = START;\
 } while(0)
 
-fsm_rt_t print_string(print_str_t* ptPrintStr)
+fsm_rt_t print_string(print_str_t *ptPRN)
 {
-    if (ptPrintStr == NULL) {
+    if (ptPRN == NULL) {
         return fsm_rt_err;
     }
     enum {
@@ -78,23 +78,28 @@ fsm_rt_t print_string(print_str_t* ptPrintStr)
         PRINT_ON
     };
     
-    switch (ptPrintStr->chStates ) {
+    switch (ptPRN->chStates ) {
         case START:
-            ptPrintStr->chStates = CHECK_EMPTY;
+            ptPRN->chStates = CHECK_EMPTY;
             //break;
         case CHECK_EMPTY:
-            if ('\0' == *ptPrintStr->pchString) {
+            if ('\0' == *ptPRN->pchString) {
                 PRINT_STRING_RESET_FSM();
                 return fsm_rt_cpl;
             } else {
-                ptPrintStr->chStates = PRINT_ON;
+                ptPRN->chStates = PRINT_ON;
             }
             //break;
         case PRINT_ON:
-            if (serial_out(*ptPrintStr->pchString)) {
-                ptPrintStr->pchString ++;
-                ptPrintStr->chStates = CHECK_EMPTY;
+            if (serial_out(*ptPRN->pchString)) {
+                ptPRN->pchString ++;
+                ptPRN->chStates = CHECK_EMPTY;
             }
     }
     return fsm_rt_on_going;
  }
+
+fsm_rt_t check_string(check_str_t *ptCHK)
+{
+
+}
