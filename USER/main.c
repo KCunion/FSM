@@ -44,16 +44,15 @@ static fsm_rt_t task_check(void);
 static fsm_rt_t task_print(void);
 static print_str_t s_tPrintHello;
 static check_str_t s_tCheckWorld;
+static event_t s_tPrintTrgo;
 int main(void)
 {
     system_init();
+    INIT_EVENT(&s_tPrintTrgo,RESET,AUTO);
     while(1) {
         breath_led();
         task_check();
         task_print();
-//        if (WAIT_EVENT(&s_tCheckWorld.tCheckEvent)) {
-//            while(!serial_out('+'));
-//        }
     }
 }
 
@@ -102,8 +101,11 @@ static fsm_rt_t check_world(void)
             //break;
         case CHECK:
             if (fsm_rt_cpl == CHECK_STRING(&s_tCheckWorld)) {
+                if (false != s_tCheckWorld.bFlag) {
+                    CHECK_WORLD_RESET_FSM();
+                    return fsm_rt_cpl;
+                }
                 CHECK_WORLD_RESET_FSM();
-                return fsm_rt_cpl;
             }
     }
     return fsm_rt_on_going;
@@ -117,14 +119,15 @@ static fsm_rt_t task_check(void)
 {
     static enum {
         START = 0,
-        PRINT
+        CHECK
     } s_tState = START;
     switch (s_tState) {
         case START:
-            s_tState = PRINT;
+            s_tState = CHECK;
             //break;
-        case PRINT:
+        case CHECK:
             if (fsm_rt_cpl == check_world()) {
+                SET_EVENT(&s_tPrintTrgo);
                 TASK_CHECK_RESET_FSM();
                 return fsm_rt_cpl;
             }
@@ -140,13 +143,19 @@ static fsm_rt_t task_print(void)
 {
     static enum {
         START = 0,
-        CHECK
+        WATING,
+        PRINT
     } s_tState = START;
     switch (s_tState) {
         case START:
-            s_tState = CHECK;
+            s_tState = WATING;
             //break;
-        case CHECK:
+        case WATING:
+            if (WAIT_EVENT(&s_tPrintTrgo)) {
+                s_tState = PRINT;
+            }
+            break;
+        case PRINT:
             if (fsm_rt_cpl == print_hello()) {
                 TASK_PRINT_RESET_FSM();
                 return fsm_rt_cpl;

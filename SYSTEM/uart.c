@@ -59,7 +59,6 @@ bool print_str_init(print_str_t* ptPRN,uint8_t* pchString)
     return false;
 }
 
-
 #define PRINT_STRING_RESET_FSM() \
 do {\
     ptPRN->chStates = START;\
@@ -100,7 +99,8 @@ fsm_rt_t print_string(print_str_t *ptPRN)
 bool check_str_init(check_str_t* ptCHK,uint8_t* pchString)
 {
     if (ptCHK != NULL && pchString != NULL) {
-        INIT_EVENT(&ptCHK->tCheckEvent,RESET,AUTO);
+//        INIT_EVENT(&ptCHK->tCheckEvent,RESET,AUTO);
+        ptCHK->bFlag = false;
         ptCHK->chStates = 0;
         ptCHK->pchFirByte = pchString;
         ptCHK->pchString = pchString;
@@ -151,7 +151,8 @@ fsm_rt_t check_string(check_str_t *ptCHK)
             //break;
         case CHECK_EMPTY:
             if ('\0' == *ptCHK->pchString) {
-                SET_EVENT(&ptCHK->tCheckEvent);
+//                SET_EVENT(&ptCHK->tCheckEvent);
+                ptCHK->bFlag = true;
                 CHECK_STRING_RESET_FSM();
                 return fsm_rt_cpl;
             } else {
