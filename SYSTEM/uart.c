@@ -152,7 +152,7 @@ fsm_rt_t check_string(check_str_t *ptCHK)
         case CHECK_EMPTY:
             if ('\0' == *ptCHK->pchString) {
 //                SET_EVENT(&ptCHK->tCheckEvent);
-                ptCHK->bFlag = true;
+                ptCHK->bFlag = true;        //check right
                 CHECK_STRING_RESET_FSM();
                 return fsm_rt_cpl;
             } else {

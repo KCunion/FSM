@@ -101,11 +101,10 @@ static fsm_rt_t check_world(void)
             //break;
         case CHECK:
             if (fsm_rt_cpl == CHECK_STRING(&s_tCheckWorld)) {
-                if (false != s_tCheckWorld.bFlag) {
-                    CHECK_WORLD_RESET_FSM();
+                CHECK_WORLD_RESET_FSM();
+                if (false != s_tCheckWorld.bFlag) { //check complete
                     return fsm_rt_cpl;
                 }
-                CHECK_WORLD_RESET_FSM();
             }
     }
     return fsm_rt_on_going;
