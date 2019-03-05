@@ -1,10 +1,11 @@
 #ifndef __UART_H
 #define __UART_H
-#include "HAL_device.h"
+
+#include <stdint.h>
 #include  "stdio.h"
 #include "stdbool.h"
 #include "fsm.h"
-
+#include "event.h"
 
 typedef struct {
     uint8_t chStates;
@@ -12,10 +13,10 @@ typedef struct {
 }print_str_t;
 
 typedef struct {
-    bool    bFlag;
     uint8_t chByte;
     uint8_t chStates;
     int8_t* pchString;
+    event_t tCheckEvent;
 }check_str_t;
 
 #define PRINT_STR_INIT(__PRINT,__STR)   print_str_init(__PRINT,__STR)

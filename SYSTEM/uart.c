@@ -1,5 +1,5 @@
+#include "HAL_device.h"
 #include "uart.h"
-
 void uart_init(void)
 {
     uint32_t wtempBaud;	
@@ -103,7 +103,7 @@ fsm_rt_t print_string(print_str_t *ptPRN)
 bool check_str_init(check_str_t* ptCHK,int8_t* pchString)
 {
     if (ptCHK != NULL && pchString != NULL) {
-        ptCHK->bFlag = false;
+        INIT_EVENT(&ptCHK->tCheckEvent,RESET,AUTO);
         ptCHK->chStates = 0;
         ptCHK->pchString = pchString;
         return true;
@@ -122,21 +122,13 @@ fsm_rt_t check_string(check_str_t *ptCHK)
     }
     enum {
         START = 0,
-        CHECK_EMPTY,
         RECEIVE,
-        CHECK_ON
+        CHECK_ON,
+        CHECK_EMPTY
     };
     switch (ptCHK->chStates) {
         case START:
-            ptCHK->chStates = CHECK_EMPTY;
-            //break;
-        case CHECK_EMPTY:
-            if ('\0' == *ptCHK->pchString) {
-                CHECK_STRING_RESET_FSM();
-                return fsm_rt_cpl;
-            } else {
-                ptCHK->chStates = RECEIVE;
-            }
+            ptCHK->chStates = RECEIVE;
             //break;
         case RECEIVE:
             if (serial_in(&ptCHK->chByte)) {
@@ -150,9 +142,17 @@ fsm_rt_t check_string(check_str_t *ptCHK)
                 ptCHK->pchString ++;
                 ptCHK->chStates = CHECK_EMPTY;
             } else {
-                ptCHK->bFlag = false;
                 CHECK_STRING_RESET_FSM();
                 return fsm_rt_cpl;
+            }
+            //break;
+        case CHECK_EMPTY:
+            if ('\0' == *ptCHK->pchString) {
+                SET_EVENT(&ptCHK->tCheckEvent);
+                CHECK_STRING_RESET_FSM();
+                return fsm_rt_cpl;
+            } else {
+                ptCHK->chStates = RECEIVE;
             }
     }
     return fsm_rt_on_going;

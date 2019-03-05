@@ -3,8 +3,8 @@
 #include "stdbool.h"
 
 typedef struct {
-    bool bAutoReset;    //     reset type
-    bool bIsSet;        //     initial state 
+    bool bAutoReset;    //  reset type
+    bool bIsSet;        //  initial state 
 } event_t;
 
 #define SET     true

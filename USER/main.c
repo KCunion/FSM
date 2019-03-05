@@ -50,7 +50,10 @@ int main(void)
     while(1) {
         breath_led();
         task_check();
-        task_print();
+//        task_print();
+        if (WAIT_EVENT(&s_tCheckWorld.tCheckEvent)) {
+            while(!serial_out('+'));
+        }
     }
 }
 
@@ -92,7 +95,7 @@ static fsm_rt_t check_world(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (!CHECK_STR_INIT(&s_tCheckWorld,(int8_t*)"world\r\n")) {
+            if (!CHECK_STR_INIT(&s_tCheckWorld,(int8_t*)"world")) {
                 return fsm_rt_err;
             }
             s_tState = CHECK;
