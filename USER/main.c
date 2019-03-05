@@ -50,10 +50,10 @@ int main(void)
     while(1) {
         breath_led();
         task_check();
-//        task_print();
-        if (WAIT_EVENT(&s_tCheckWorld.tCheckEvent)) {
-            while(!serial_out('+'));
-        }
+        task_print();
+//        if (WAIT_EVENT(&s_tCheckWorld.tCheckEvent)) {
+//            while(!serial_out('+'));
+//        }
     }
 }
 
@@ -69,7 +69,7 @@ static fsm_rt_t print_hello(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (!PRINT_STR_INIT(&s_tPrintHello,(int8_t*)"hello\r\n")) {
+            if (!PRINT_STR_INIT(&s_tPrintHello,"hello\r\n")) {
                 return fsm_rt_err;
             }
             s_tState = PRINT;
@@ -95,7 +95,7 @@ static fsm_rt_t check_world(void)
     } s_tState = START;
     switch (s_tState) {
         case START:
-            if (!CHECK_STR_INIT(&s_tCheckWorld,(int8_t*)"world")) {
+            if (!CHECK_STR_INIT(&s_tCheckWorld,"world")) {
                 return fsm_rt_err;
             }
             s_tState = CHECK;

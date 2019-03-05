@@ -49,7 +49,7 @@ bool serial_in(uint8_t *pchByte)
     return false;
 }
 
-bool print_str_init(print_str_t* ptPRN,int8_t* pchString)
+bool print_str_init(print_str_t* ptPRN,uint8_t* pchString)
 {
     if (ptPRN != NULL && pchString != NULL) {
         ptPRN->chStates = 0;
@@ -59,10 +59,7 @@ bool print_str_init(print_str_t* ptPRN,int8_t* pchString)
     return false;
 }
 
-/*! \brief print the string
- *! \param ptPrintStr  string
- *! \return fsm state
- */
+
 #define PRINT_STRING_RESET_FSM() \
 do {\
     ptPRN->chStates = START;\
@@ -100,11 +97,12 @@ fsm_rt_t print_string(print_str_t *ptPRN)
     return fsm_rt_on_going;
  }
 
-bool check_str_init(check_str_t* ptCHK,int8_t* pchString)
+bool check_str_init(check_str_t* ptCHK,uint8_t* pchString)
 {
     if (ptCHK != NULL && pchString != NULL) {
         INIT_EVENT(&ptCHK->tCheckEvent,RESET,AUTO);
         ptCHK->chStates = 0;
+        ptCHK->pchFirByte = pchString;
         ptCHK->pchString = pchString;
         return true;
     }
@@ -142,8 +140,13 @@ fsm_rt_t check_string(check_str_t *ptCHK)
                 ptCHK->pchString ++;
                 ptCHK->chStates = CHECK_EMPTY;
             } else {
-                CHECK_STRING_RESET_FSM();
-                return fsm_rt_cpl;
+                if (*ptCHK->pchFirByte == ptCHK->chByte) {
+                    ptCHK->pchString = ptCHK->pchFirByte + 1;
+                    ptCHK->chStates = CHECK_EMPTY;
+                } else {
+                    CHECK_STRING_RESET_FSM();
+                    return fsm_rt_cpl;
+                }
             }
             //break;
         case CHECK_EMPTY:
