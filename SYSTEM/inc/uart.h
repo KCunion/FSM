@@ -13,12 +13,10 @@ typedef struct {
 }print_str_t;
 
 typedef struct {
-    bool bFlag;
     uint8_t chByte;
     uint8_t chStates;
     uint8_t* pchString;
     uint8_t* pchFirByte;
-//    event_t tCheckEvent;
 }check_str_t;
 
 #define PRINT_STR_INIT(__PRINT,__STR)   print_str_init(__PRINT,__STR)

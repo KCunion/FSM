@@ -99,11 +99,8 @@ fsm_rt_t print_string(print_str_t *ptPRN)
 bool check_str_init(check_str_t* ptCHK,uint8_t* pchString)
 {
     if (ptCHK != NULL && pchString != NULL) {
-//        INIT_EVENT(&ptCHK->tCheckEvent,RESET,AUTO);
-        ptCHK->bFlag = false;
         ptCHK->chStates = 0;
         ptCHK->pchFirByte = pchString;
-        ptCHK->pchString = pchString;
         return true;
     }
     return false;
@@ -120,13 +117,22 @@ fsm_rt_t check_string(check_str_t *ptCHK)
     }
     enum {
         START = 0,
+        CHECK_EMPTY,
         RECEIVE,
-        CHECK_ON,
-        CHECK_EMPTY
+        CHECK_ON
     };
     switch (ptCHK->chStates) {
         case START:
+            ptCHK->pchString = ptCHK->pchFirByte;
             ptCHK->chStates = RECEIVE;
+            //break;
+        case CHECK_EMPTY:
+            if ('\0' == *ptCHK->pchString) {
+                CHECK_STRING_RESET_FSM();
+                return fsm_rt_cpl;
+            } else {
+                ptCHK->chStates = RECEIVE;
+            }
             //break;
         case RECEIVE:
             if (serial_in(&ptCHK->chByte)) {
@@ -145,18 +151,7 @@ fsm_rt_t check_string(check_str_t *ptCHK)
                     ptCHK->chStates = CHECK_EMPTY;
                 } else {
                     CHECK_STRING_RESET_FSM();
-                    return fsm_rt_cpl;
                 }
-            }
-            //break;
-        case CHECK_EMPTY:
-            if ('\0' == *ptCHK->pchString) {
-//                SET_EVENT(&ptCHK->tCheckEvent);
-                ptCHK->bFlag = true;        //check right
-                CHECK_STRING_RESET_FSM();
-                return fsm_rt_cpl;
-            } else {
-                ptCHK->chStates = RECEIVE;
             }
     }
     return fsm_rt_on_going;
