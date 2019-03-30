@@ -124,7 +124,7 @@ fsm_rt_t check_string(check_str_t *ptCHK)
     switch (ptCHK->chStates) {
         case START:
             ptCHK->pchString = ptCHK->pchFirByte;
-            ptCHK->chStates = RECEIVE;
+            ptCHK->chStates = CHECK_EMPTY;
             //break;
         case CHECK_EMPTY:
             if ('\0' == *ptCHK->pchString) {
