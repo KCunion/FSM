@@ -100,7 +100,7 @@ bool check_str_init(check_str_t* ptCHK,uint8_t* pchString)
 {
     if (ptCHK != NULL && pchString != NULL) {
         ptCHK->chStates = 0;
-        ptCHK->pchFirByte = pchString;
+        ptCHK->pchString = pchString;
         return true;
     }
     return false;
@@ -123,7 +123,6 @@ fsm_rt_t check_string(check_str_t *ptCHK)
     };
     switch (ptCHK->chStates) {
         case START:
-            ptCHK->pchString = ptCHK->pchFirByte;
             ptCHK->chStates = CHECK_EMPTY;
             //break;
         case CHECK_EMPTY:
@@ -146,12 +145,7 @@ fsm_rt_t check_string(check_str_t *ptCHK)
                 ptCHK->pchString ++;
                 ptCHK->chStates = CHECK_EMPTY;
             } else {
-                if (*ptCHK->pchFirByte == ptCHK->chByte) {
-                    ptCHK->pchString = ptCHK->pchFirByte + 1;
-                    ptCHK->chStates = CHECK_EMPTY;
-                } else {
-                    CHECK_STRING_RESET_FSM();
-                }
+                CHECK_STRING_RESET_FSM();
             }
     }
     return fsm_rt_on_going;
