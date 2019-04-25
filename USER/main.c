@@ -1,7 +1,11 @@
 #include "sys.h"
 
-#define ABS(__N)    ((__N) < 0 ? -(__N) : (__N))
-#define _BV(__N)    ((uint32_t)1<<(__N))
+#include "compiler.h"
+#include "ooc.h"
+#include "simple_fsm.h"
+
+//#define ABS(__N)    ((__N) < 0 ? -(__N) : (__N))
+//#define _BV(__N)    ((uint32_t)1<<(__N))
 #define TOP         (0x01FF)
 
 /*! \brief set the 16-level led gradation
