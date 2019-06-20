@@ -1,5 +1,5 @@
-#include "sys.h"
-#include "event.h"
+#include <stdio.h>
+#include ".\event.h"
 
 void set_event(event_t *ptEvent)
 {

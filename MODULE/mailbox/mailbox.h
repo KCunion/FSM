@@ -1,7 +1,7 @@
 #ifndef __MAILBOX_H
 #define __MAILBOX_H
 #include "stdbool.h"
-#include "event.h"
+#include "..\event\event.h"
 
 typedef struct {
     event_t tSealed;

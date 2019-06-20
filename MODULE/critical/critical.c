@@ -1,5 +1,5 @@
-#include "sys.h"
-#include "critical.h"
+#include <stdio.h>
+#include ".\critical.h"
 
 bool enter_cricital_sector(critical_sector_t *ptCritical)
 {

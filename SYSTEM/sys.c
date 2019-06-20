@@ -1,4 +1,6 @@
-#include "sys.h"
+#include "HAL_device.h"
+#include "..\BSP\led\led.h"
+#include "..\BSP\uart\uart.h"
 
 void System_Clock_Init(void)
 {

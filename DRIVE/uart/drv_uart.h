@@ -1,16 +1,9 @@
-#ifndef __UART_H
-#define __UART_H
+#ifndef __DRV_UART_H
+#define __DRV_UART_H
 
-#include <stdint.h>
-#include "stdbool.h"
-//#include "stdio.h"
-#include "event.h"
-#include "fsm.h"
-
-#include "compiler.h"
-#include "ooc.h"
 #include "simple_fsm.h"
-
+#include "ooc.h"
+#include "compiler.h"
 typedef struct {
     uint8_t chStates;
     char* pchString;
@@ -27,14 +20,9 @@ typedef struct {
 #define PRINT_STRING(__PRINT)   print_string(__PRINT)
 #define CHECK_STRING(__CHECK)   check_string(__CHECK)
 
-extern void uart_init(void);
-extern bool serial_out(uint8_t chByte);
-extern bool serial_in(uint8_t *pchByte);
-
 extern bool print_str_init(print_str_t* ptPRN,char* pchString);
 extern bool check_str_init(check_str_t* ptCHK,char* pchString);
 extern fsm_rt_t print_string(print_str_t *ptPRN);
 extern fsm_rt_t check_string(check_str_t *ptCHK);
+
 #endif
-
-

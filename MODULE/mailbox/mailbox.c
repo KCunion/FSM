@@ -1,10 +1,10 @@
-#include "sys.h"
-#include "mailbox.h"
+#include <stdio.h>
+#include ".\mailbox.h"
 
 void init_mail(mailbox_t *ptMail)
 {
     if (NULL != ptMail) {
-        INIT_EVENT(&ptMail->tSealed,RESET,AUTO);
+        INIT_EVENT(&ptMail->tSealed,EVENT_RESET,EVENT_AUTO);
         ptMail->pTarget = NULL;
     }
 }

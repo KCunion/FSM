@@ -10,9 +10,8 @@
       <TargetName>test</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>6120000::V6.12::.\ARMCLANG</pArmCC>
-      <pCCUsed>6120000::V6.12::.\ARMCLANG</pCCUsed>
-      <uAC6>1</uAC6>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>MM32L373PF</Device>
@@ -135,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4096</DriverSelection>
+            <DriverSelection>-1</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -313,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>7</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -322,14 +321,14 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>3</wLevel>
+            <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
             <uGnu>0</uGnu>
             <useXO>0</useXO>
-            <v6Lang>3</v6Lang>
-            <v6LangP>3</v6LangP>
+            <v6Lang>1</v6Lang>
+            <v6LangP>1</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -339,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\BSP\inc;..\MM32L3xx\Include;..\SYSTEM\inc;..\MODULE\inc</IncludePath>
+              <IncludePath>..\MM32L3xx\Include;..\MODULE\utilities;..\MODULE\utilities\preprocessor</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -391,17 +390,32 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>BSP</GroupName>
+          <GroupName>Bsp</GroupName>
           <Files>
             <File>
               <FileName>led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\BSP\led.c</FilePath>
+              <FilePath>..\BSP\led\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\BSP\led\led.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\uart\uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\BSP\uart\uart.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>SYSTEM</GroupName>
+          <GroupName>System</GroupName>
           <Files>
             <File>
               <FileName>sys.c</FileName>
@@ -409,90 +423,84 @@
               <FilePath>..\SYSTEM\sys.c</FilePath>
             </File>
             <File>
-              <FileName>uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\uart.c</FilePath>
+              <FileName>sys.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\SYSTEM\sys.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>MODULE</GroupName>
+          <GroupName>Module</GroupName>
           <Files>
             <File>
               <FileName>critical.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MODULE\critical.c</FilePath>
+              <FilePath>..\MODULE\critical\critical.c</FilePath>
+            </File>
+            <File>
+              <FileName>critical.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\critical\critical.h</FilePath>
             </File>
             <File>
               <FileName>event.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MODULE\event.c</FilePath>
+              <FilePath>..\MODULE\event\event.c</FilePath>
             </File>
             <File>
-              <FileName>queue.c</FileName>
+              <FileName>event.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\event\event.h</FilePath>
+            </File>
+            <File>
+              <FileName>mailbox.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MODULE\queue.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>..\MODULE\mailbox\mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\mailbox\mailbox.h</FilePath>
+            </File>
+            <File>
+              <FileName>ooc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\utilities\ooc.h</FilePath>
+            </File>
+            <File>
+              <FileName>compiler.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\utilities\compiler.h</FilePath>
+            </File>
+            <File>
+              <FileName>simple_fsm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\utilities\simple_fsm.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>USER</GroupName>
+          <GroupName>User</GroupName>
           <Files>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\main.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drive</GroupName>
+          <Files>
+            <File>
+              <FileName>drv_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DRIVE\uart\drv_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DRIVE\uart\drv_uart.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -506,8 +514,8 @@
   <RTE>
     <apis/>
     <components>
-      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.1.2" condition="ARMv6_7_8-M Device">
-        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.4.0"/>
+      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.0.1" condition="ARMv6_7_8-M Device">
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.0.1"/>
         <targetInfos>
           <targetInfo name="test"/>
         </targetInfos>

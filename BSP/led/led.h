@@ -1,7 +1,5 @@
 #ifndef __LED_H
 #define __LED_H	 
-#include "HAL_device.h"
-
 
 #define LED4_ON()   do{GPIOA ->BRR = 0x8000;}while(0)    // PA15
 #define LED4_OFF()  do{GPIOA ->BSRR = 0x8000;}while(0)
@@ -23,4 +21,5 @@
 #define IS_KEY2_UP()	        (GPIOB ->IDR >> 11 & 1)
 
 extern void gpio_init(void);
+extern void breath_led(void);
 #endif

@@ -1,16 +1,16 @@
 #ifndef __EVENT_H
 #define __EVENT_H
-#include "stdbool.h"
+#include <stdbool.h>
 
 typedef struct {
     bool bAutoReset;    //  reset type
     bool bIsSet;        //  initial state 
 } event_t;
 
-#define SET     true
-#define RESET   false
-#define AUTO    false
-#define MANUAL  true
+#define EVENT_SET     true
+#define EVENT_RESET   false
+#define EVENT_AUTO    false
+#define EVENT_MANUAL  true
     
 #define SET_EVENT(__EVENT)      set_event(__EVENT)       //发送事件
 #define WAIT_EVENT(__EVENT)     wait_event(__EVENT)     //等待事件

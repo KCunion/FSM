@@ -1,6 +1,6 @@
 #ifndef __CRITICAL_H
 #define __CRITICAL_H
-#include "stdbool.h"
+#include <stdbool.h>
 
 typedef struct {
     bool bLocked;
