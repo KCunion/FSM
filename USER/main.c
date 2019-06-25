@@ -16,13 +16,12 @@
 #include "compiler.h"
 #include "ooc.h"
 
-static print_str_t s_tPrintHello;
-static check_str_t s_tCheckWorld;
 static event_t s_tPrintTrgo;
 
+static fsm(print_string) s_fsmPrintString;
+static fsm(check_string) s_fsmCheckString;
 //定义print_hello状态机
-simple_fsm( print_hello,
-)
+simple_fsm( print_hello)
 static fsm(print_hello) s_fsmPrintHello;
 //初始化print_hello状态机
 fsm_initialiser(print_hello)
@@ -35,20 +34,20 @@ fsm_implementation(print_hello)
     )
     body(
         on_start(
-            if (!PRINT_STR_INIT(&s_tPrintHello,"hello\r\n")) {
-                reset_fsm();
-            }
+            init_fsm(   print_string,
+                        &s_fsmPrintString,
+                        args("hello\r\n", sizeof("hello\r\n") - 1)
+            );
             transfer_to(PRINT);
-        )
+        );
         state ( PRINT,
-            if (fsm_rt_cpl == PRINT_STRING(&s_tPrintHello)) {
+            if (fsm_rt_cpl == call_fsm(print_string, &s_fsmPrintString)) {
                 fsm_cpl();
             }
         )
     )
 //定义task_print状态机
-simple_fsm( task_print,
-)
+simple_fsm( task_print)
 static fsm(task_print) s_fsmTaskPrint;
 //初始化task_print状态机
 fsm_initialiser(task_print)
@@ -59,8 +58,11 @@ fsm_implementation( task_print)
         WATING,
         PRINT
     )
-    body(
+    body (
         on_start(
+            init_fsm(   print_hello,
+                        &s_fsmPrintHello
+            );
             transfer_to(WATING);
         )
         state( WATING,
@@ -75,8 +77,7 @@ fsm_implementation( task_print)
         )
     )
 //定义check_world状态机
-simple_fsm( check_world,
-)
+simple_fsm( check_world)
 static fsm(check_world) s_fsmCheckWorld;
 //初始化check_world状态机
 fsm_initialiser(check_world)
@@ -88,20 +89,20 @@ fsm_implementation(check_world)
     )
     body(
         on_start(
-            if (!CHECK_STR_INIT(&s_tCheckWorld,"world")) {
-                    reset_fsm();
-            }
+            init_fsm(   check_string,
+                        &s_fsmCheckString,
+                        args("world", sizeof("world") - 1)
+            );
             transfer_to(CHECK);
         )
         state( CHECK,
-            if (fsm_rt_cpl == CHECK_STRING(&s_tCheckWorld)) {
+            if (fsm_rt_cpl == call_fsm(check_string, &s_fsmCheckString)) {
                 fsm_cpl();
             }
         )
     )
 //定义task_check状态机
-simple_fsm( task_check,
-)
+simple_fsm( task_check)
 static fsm(task_check) s_fsmTaskCheck;
 //初始化task_check状态机
 fsm_initialiser(task_check)
@@ -113,6 +114,9 @@ fsm_implementation(task_check)
     )
     body(
         on_start(
+            init_fsm(   check_world,
+                        &s_fsmCheckWorld
+            );
             transfer_to(CHECK);
         )
         state( CHECK,
@@ -123,10 +127,17 @@ fsm_implementation(task_check)
         )
     )
 
+
 int main(void)
 {
     system_init();
     INIT_EVENT(&s_tPrintTrgo,EVENT_RESET,EVENT_AUTO);
+    init_fsm(   task_print,
+                &s_fsmTaskPrint
+     );
+    init_fsm(   task_check,
+                &s_fsmTaskCheck
+    );
     while(1) {
         breath_led();
         call_fsm(   task_check,

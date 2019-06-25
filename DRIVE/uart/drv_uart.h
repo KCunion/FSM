@@ -4,25 +4,37 @@
 #include "simple_fsm.h"
 #include "ooc.h"
 #include "compiler.h"
-typedef struct {
-    uint8_t chStates;
-    char* pchString;
-}print_str_t;
 
-typedef struct {
-    uint8_t chByte;
-    uint8_t chStates;
-    char* pchString;
-}check_str_t;
+/*! fsm used to output specified string */
+extern_simple_fsm( print_string,
+    def_params(
+        const char *pchStr;              //!< point to the target string
+        uint16_t hwIndex;                //!< current index
+        uint16_t hwLength;              //!< claimed length of the target string, it is used to prevent buffer overflow 
+    )
+)
+/*! fsm used to output specified string */
+extern_simple_fsm( check_string,
+    def_params(
+        const char *pchStr;              //!< point to the target string
+        uint16_t hwIndex;                //!< current index
+        uint16_t hwLength;              //!< claimed length of the target string, it is used to prevent buffer overflow 
+    )
+)
+//declare_simple_fsm(print_string);
 
-#define PRINT_STR_INIT(__PRINT,__STR)   print_str_init(__PRINT,__STR)
-#define CHECK_STR_INIT(__CHECK,__STR)   check_str_init(__CHECK,__STR)
-#define PRINT_STRING(__PRINT)   print_string(__PRINT)
-#define CHECK_STRING(__CHECK)   check_string(__CHECK)
+extern_fsm_implementation(print_string);
 
-extern bool print_str_init(print_str_t* ptPRN,char* pchString);
-extern bool check_str_init(check_str_t* ptCHK,char* pchString);
-extern fsm_rt_t print_string(print_str_t *ptPRN);
-extern fsm_rt_t check_string(check_str_t *ptCHK);
+extern_fsm_initialiser(print_string,
+    args(
+        const char *pchStr,
+        uint16_t hwLength
+    ));
+extern_fsm_implementation(check_string);
 
+extern_fsm_initialiser(check_string,
+    args(
+        const char *pchStr,
+        uint16_t hwLength
+    ));
 #endif
