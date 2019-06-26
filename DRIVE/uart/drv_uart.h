@@ -24,13 +24,14 @@ extern_simple_fsm( check_string,
 //declare_simple_fsm(print_string);
 
 extern_fsm_implementation(print_string);
+extern_fsm_implementation(check_string);
 
 extern_fsm_initialiser(print_string,
     args(
         const char *pchStr,
         uint16_t hwLength
     ));
-extern_fsm_implementation(check_string);
+
 
 extern_fsm_initialiser(check_string,
     args(
