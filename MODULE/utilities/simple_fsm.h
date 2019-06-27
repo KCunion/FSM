@@ -48,7 +48,7 @@
         end_def_class(__FSM_TYPE)
 
 #define simple_fsm(__NAME, ...)                                                 \
-        declare_simple_fsm(__NAME);                                             \
+        declare_simple_fsm(__NAME)                                              \
         __simple_fsm(fsm(__NAME), __VA_ARGS__)
         
 #define def_simple_fsm(__NAME, ...)                                             \
@@ -108,7 +108,7 @@
 #define __extern_fsm_implementation_ex(__NAME,__TYPE, ...)                      \
         fsm_rt_t __NAME( __TYPE *ptFSM __VA_ARGS__ );                           \
         typedef fsm_rt_t __NAME##_fn( __TYPE *ptFSM __VA_ARGS__ );              
-        
+
 #define declare_fsm_implementation_ex(__NAME, __TYPE, ...)                      \
             __extern_fsm_implementation_ex(__NAME, __TYPE, __VA_ARGS__)
 
@@ -117,7 +117,7 @@
 
 #define extern_fsm_implementation(__NAME, ...)                                  \
             __extern_fsm_implementation_ex(__NAME, fsm(__NAME), __VA_ARGS__)
-            
+
 #define declare_fsm_implementation(__NAME, ...)                                 \
             __extern_fsm_implementation_ex(__NAME, fsm(__NAME), __VA_ARGS__)
 //! @}

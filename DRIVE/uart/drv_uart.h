@@ -21,7 +21,6 @@ extern_simple_fsm( check_string,
         uint16_t hwLength;              //!< claimed length of the target string, it is used to prevent buffer overflow 
     )
 )
-//declare_simple_fsm(print_string);
 
 extern_fsm_implementation(print_string);
 extern_fsm_implementation(check_string);

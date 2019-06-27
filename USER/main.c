@@ -65,11 +65,11 @@ fsm_implementation(print_hello)
             );
             transfer_to(PRINT);
         );
-        state ( PRINT,
+        state (PRINT) {
             if (fsm_rt_cpl == call_fsm(print_string, &(this.fsmPrintString))) {
                 fsm_cpl();
             }
-        )
+        }
     )
 
 //初始化task_print状态机
@@ -88,16 +88,16 @@ fsm_implementation( task_print)
             );
             transfer_to(WATING);
         )
-        state( WATING,
+        state (WATING) {
             if (WAIT_EVENT(&s_tPrintTrgo)) {
                 transfer_to(PRINT);
             }
-        )
-        state( PRINT,
+        }
+        state (PRINT) {
             if (fsm_rt_cpl == call_fsm(print_hello,&(this.fsmPrintHello))) {
                 fsm_cpl();
             }
-        )
+        }
     )
 
 //初始化check_world状态机
@@ -116,11 +116,11 @@ fsm_implementation(check_world)
             );
             transfer_to(CHECK);
         )
-        state( CHECK,
+        state(CHECK) {
             if (fsm_rt_cpl == call_fsm(check_string, &(this.fsmCheckString))) {
                 fsm_cpl();
             }
-        )
+        }
     )
 
 //初始化task_check状态机
@@ -138,12 +138,12 @@ fsm_implementation(task_check)
             );
             transfer_to(CHECK);
         )
-        state( CHECK,
+        state(CHECK) {
             if (fsm_rt_cpl == call_fsm(check_world,&(this.fsmCheckWorld))) {
                 SET_EVENT(&s_tPrintTrgo);
                 fsm_cpl();
             }
-        )
+        }
     )
 
 
