@@ -4,8 +4,12 @@
 #include "simple_fsm.h"
 #include "compiler.h"
 #include "ooc.h"
+
+declare_simple_fsm(check_string)
+declare_simple_fsm(print_string)
+
 //定义check_string状态机
-simple_fsm( check_string,
+def_simple_fsm( check_string,
     def_params(
         const char *pchStr;              //!< point to the target string
         uint16_t hwIndex;                //!< current index
@@ -15,7 +19,7 @@ simple_fsm( check_string,
 
 //定义print_hello状态机
 /*! fsm used to output specified string */
-simple_fsm( print_string,
+def_simple_fsm( print_string,
     def_params(
         const char *pchStr;              //!< point to the target string
         uint16_t hwIndex;                //!< current index
@@ -42,24 +46,26 @@ fsm_initialiser(print_string,
 
 //实现print_string状态机
 fsm_implementation(print_string)
+{
     def_states(
         CHECK_EMPTY,
         PRINT_ON
     )
-    body(
-        state (CHECK_EMPTY) {
-            if (this.hwIndex == this.hwLength) {
-                fsm_cpl();                
-            }
-            transfer_to(PRINT_ON);
+    body_begin();
+    state (CHECK_EMPTY) {
+        if (this.hwIndex == this.hwLength) {
+            fsm_cpl();                
         }
-        state (PRINT_ON) {
-            if (serial_out(*(this.pchStr + this.hwIndex))) {
-                this.hwIndex ++;
-                transfer_to(CHECK_EMPTY);
-            }
+        transfer_to(PRINT_ON);
+    }
+    state (PRINT_ON) {
+        if (serial_out(*(this.pchStr + this.hwIndex))) {
+            this.hwIndex ++;
+            transfer_to(CHECK_EMPTY);
         }
-    )
+    }
+    body_end();
+}
 
 //初始化check_string状态机
 fsm_initialiser(check_string,
@@ -79,32 +85,35 @@ fsm_initialiser(check_string,
     )
 //实现check_string状态机
 fsm_implementation(check_string)
+{
     def_states(
         CHECK_EMPTY,
         RECEIVE,
         CHECK_ON
     )
     uint8_t chByte;
-    body(
-        state (CHECK_EMPTY) {
-            if (this.hwIndex == this.hwLength) {
-                fsm_cpl();                
-            }
-            transfer_to(RECEIVE);
+    body_begin();
+    state (CHECK_EMPTY) {
+        if (this.hwIndex == this.hwLength) {
+            fsm_cpl();                
         }
-        state (RECEIVE) {
-             if (serial_in(&chByte)) {
-                 update_state_to(CHECK_ON);
-             } else {
-                fsm_on_going();
-            }
-        }
-        state (CHECK_ON) {
-            if (*(this.pchStr + this.hwIndex) == chByte) {
-                this.hwIndex ++;
-                transfer_to(CHECK_EMPTY);
+        transfer_to(RECEIVE);
+    }
+    state (RECEIVE) {
+            if (serial_in(&chByte)) {
+                update_state_to(CHECK_ON);
             } else {
-                reset_fsm();
-            }
+            fsm_on_going();
         }
-    )
+    }
+    state (CHECK_ON) {
+        if (*(this.pchStr + this.hwIndex) == chByte) {
+            this.hwIndex ++;
+            transfer_to(CHECK_EMPTY);
+        } else {
+            reset_fsm();
+        }
+    }
+    body_end();
+}
+
