@@ -1,9 +1,9 @@
 //#include ".\drv_uart.h"
 #include "..\..\BSP\uart\uart.h"
 
-#include "simple_fsm.h"
-#include "compiler.h"
-#include "ooc.h"
+#include "..\..\MODULE\fsm\simple_fsm.h"
+#include "..\..\MODULE\fsm\compiler.h"
+#include "..\..\MODULE\fsm\ooc.h"
 
 declare_simple_fsm(check_string)
 declare_simple_fsm(print_string)

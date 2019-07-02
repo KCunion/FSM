@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\MM32L3xx\Include;..\MODULE\utilities;..\MODULE\utilities\preprocessor;..\SYSTEM</IncludePath>
+              <IncludePath>..\MM32L3xx\Include;..\SYSTEM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -391,7 +391,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Bsp</GroupName>
+          <GroupName>BSP</GroupName>
           <Files>
             <File>
               <FileName>led.c</FileName>
@@ -416,7 +416,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>System</GroupName>
+          <GroupName>SYSTEM</GroupName>
           <Files>
             <File>
               <FileName>sys.c</FileName>
@@ -431,7 +431,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Module</GroupName>
+          <GroupName>MODULE</GroupName>
           <Files>
             <File>
               <FileName>critical.c</FileName>
@@ -464,24 +464,24 @@
               <FilePath>..\MODULE\mailbox\mailbox.h</FilePath>
             </File>
             <File>
-              <FileName>ooc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\MODULE\utilities\ooc.h</FilePath>
-            </File>
-            <File>
               <FileName>compiler.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\MODULE\utilities\compiler.h</FilePath>
+              <FilePath>..\MODULE\fsm\compiler.h</FilePath>
+            </File>
+            <File>
+              <FileName>ooc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MODULE\fsm\ooc.h</FilePath>
             </File>
             <File>
               <FileName>simple_fsm.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\MODULE\utilities\simple_fsm.h</FilePath>
+              <FilePath>..\MODULE\fsm\simple_fsm.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>User</GroupName>
+          <GroupName>USER</GroupName>
           <Files>
             <File>
               <FileName>main.c</FileName>

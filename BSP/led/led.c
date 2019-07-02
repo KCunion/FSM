@@ -1,5 +1,5 @@
 #include "HAL_device.h"
-#include "compiler.h"
+#include "..\..\MODULE\fsm\compiler.h"
 #include ".\led.h"
 
 #define TOP     (0x01FF)

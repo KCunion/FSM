@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "HAL_device.h"
-#include "simple_fsm.h"
 #include ".\uart.h"
 
 void uart_init(void)

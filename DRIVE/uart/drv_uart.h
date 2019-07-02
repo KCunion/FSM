@@ -1,9 +1,9 @@
 #ifndef __DRV_UART_H
 #define __DRV_UART_H
 
-#include "simple_fsm.h"
-#include "ooc.h"
-#include "compiler.h"
+#include "..\..\MODULE\fsm\simple_fsm.h"
+#include "..\..\MODULE\fsm\ooc.h"
+#include "..\..\MODULE\fsm\compiler.h"
 
 /*! fsm used to output specified string */
 extern_simple_fsm( print_string,
@@ -37,4 +37,5 @@ extern_fsm_initialiser(check_string,
         const char *pchStr,
         uint16_t hwLength
     ));
+        
 #endif
