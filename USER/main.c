@@ -18,12 +18,12 @@
 
 #define PRINT_STR_POOL_ITEM_SIZE    sizeof(fsm(print_string))
  
-typedef struct print_str_pool_item_t     print_str_pool_item_t;
+typedef struct print_str_pool_item_t print_str_pool_item_t;
 struct print_str_pool_item_t {
     bool bIsFree;
     uint8_t chBuffer[PRINT_STR_POOL_ITEM_SIZE];
 };
-#define PRINT_STR_POOL_ITEM_COUNT    8
+#define PRINT_STR_POOL_ITEM_COUNT    2
  
 static print_str_pool_item_t s_tExamplePool[PRINT_STR_POOL_ITEM_COUNT];
 
@@ -55,6 +55,7 @@ fsm_initialiser(print_orange)
     init_body()
 fsm_initialiser(print_world)
     init_body()
+
 fsm_implementation(print_apple)
 {
     def_states(
@@ -128,5 +129,20 @@ int main(void)
     }
 }
 
-
+print_str_pool_item_t *    print_str_pool_allocate (void)
+{
+    uint8_t i;
+    for (i = 0; i < PRINT_STR_POOL_ITEM_COUNT; i ++) {
+        if (false  != s_tExamplePool[i].bIsFree) {
+            return &s_tExamplePool[i];
+        }
+    }
+    return NULL;
+}
+void print_str_pool_free( print_str_pool_item_t *ptItem )
+{
+    if (NULL != ptItem) {
+        ptItem->bIsFree = true;
+    }
+}
 
