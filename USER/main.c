@@ -24,7 +24,7 @@ struct print_str_pool_item_t {
     uint8_t chBuffer[PRINT_STR_POOL_ITEM_SIZE];
 };
 #define PRINT_STR_POOL_ITEM_COUNT    2
- 
+//ÄÚ´æ³Ø
 static print_str_pool_item_t s_tExamplePool[PRINT_STR_POOL_ITEM_COUNT];
 
 print_str_pool_item_t *    print_str_pool_allocate (void);
@@ -36,17 +36,20 @@ declare_fsm(print_world)
 
 def_fsm(print_apple,
     def_params(
-        fsm(print_string) fsmPrintApple;
+//        fsm(print_string) fsmPrintApple;
+        print_str_pool_item_t * poolPrintApple;
     ) 
 )
 def_fsm(print_orange,
     def_params(
-        fsm(print_string) fsmPrintOrange;
+//        fsm(print_string) fsmPrintOrange;
+        print_str_pool_item_t * poolPrintOrange;
     ) 
 )
 def_fsm(print_world,
     def_params(
-        fsm(print_string) fsmPrintWorld;
+//        fsm(print_string) fsmPrintWorld;
+        print_str_pool_item_t * poolPrintWorld;
     ) 
 )
 fsm_initialiser(print_apple)
@@ -61,16 +64,24 @@ fsm_implementation(print_apple)
     def_states(
         PRINT
     )
+
     body_begin();
-    
     on_start(
-        init_fsm(print_string,
-                &this.fsmPrintApple,args("apple\r\n",sizeof("apple\r\n") -1)
-        );
-        transfer_to(PRINT)
+        this.poolPrintApple = print_str_pool_allocate();
+        if(NULL != this.poolPrintApple) {
+            init_fsm(print_string,
+                    (fsm(print_string) *) &this.poolPrintApple->chBuffer,
+                     args("apple",sizeof("apple") -1)
+            );
+            transfer_to(PRINT);
+        }
+        fsm_on_going();
     )
     state(PRINT) {
-        if(fsm_rt_cpl == call_fsm(print_string,&this.fsmPrintApple)) {
+        if(fsm_rt_cpl == 
+           call_fsm(print_string,
+                    (fsm(print_string) *) &this.poolPrintApple->chBuffer)) {
+            print_str_pool_free(this.poolPrintApple);
             fsm_cpl();
         }
     }
@@ -83,15 +94,23 @@ fsm_implementation(print_orange)
         PRINT
     )
     body_begin();
-    
+
     on_start(
-        init_fsm(print_string,
-                &this.fsmPrintOrange,args("orange\r\n",sizeof("orange\r\n") -1)
-        );
-        transfer_to(PRINT)
+        this.poolPrintOrange = print_str_pool_allocate();
+        if(NULL != this.poolPrintOrange) {
+            init_fsm(print_string,
+                    (fsm(print_string) *) &this.poolPrintOrange->chBuffer,
+                     args("orange",sizeof("orange") -1)
+            );
+            transfer_to(PRINT);
+        }
+        fsm_on_going();
     )
     state(PRINT) {
-        if(fsm_rt_cpl == call_fsm(print_string,&this.fsmPrintOrange)) {
+        if(fsm_rt_cpl == 
+           call_fsm(print_string,
+                   (fsm(print_string) *) &this.poolPrintOrange->chBuffer)) {
+            print_str_pool_free(this.poolPrintOrange);
             fsm_cpl();
         }
     }
@@ -104,28 +123,46 @@ fsm_implementation(print_world)
         PRINT
     )
     body_begin();
-    
+
     on_start(
-        init_fsm(print_string,
-                &this.fsmPrintWorld,args("world\r\n",sizeof("world\r\n") -1)
-        );
-        transfer_to(PRINT)
+        this.poolPrintWorld = print_str_pool_allocate();
+        if(NULL != this.poolPrintWorld) {
+            init_fsm(print_string,
+                    (fsm(print_string) *) &this.poolPrintWorld,
+                    args("world",sizeof("world") -1)
+            );
+            transfer_to(PRINT);
+        }
+        fsm_on_going();
     )
     state(PRINT) {
-        if(fsm_rt_cpl == call_fsm(print_string,&this.fsmPrintWorld)) {
+        if(fsm_rt_cpl == 
+           call_fsm(print_string,
+           (fsm(print_string) *) &this.poolPrintWorld->chBuffer)) {
+            print_str_pool_free(this.poolPrintWorld);
             fsm_cpl();
         }
     }
     body_end();
 }
 static fsm(print_apple) s_fsmPrintApple;
+static fsm(print_orange) s_fsmPrintOrange;
+static fsm(print_world) s_fsmPrintWorld;
 int main(void)
 {
+    uint8_t i;
     system_init();
+    for (i = 0;i < PRINT_STR_POOL_ITEM_COUNT;i ++) {
+        print_str_pool_free(&s_tExamplePool[i]);
+    }
     init_fsm(print_apple,&s_fsmPrintApple);
+    init_fsm(print_orange,&s_fsmPrintOrange);
+    init_fsm(print_world,&s_fsmPrintWorld);
     while(1) {
         breath_led();
         call_fsm(print_apple,&s_fsmPrintApple);
+        call_fsm(print_orange,&s_fsmPrintOrange);
+        call_fsm(print_world,&s_fsmPrintWorld);
     }
 }
 
@@ -134,6 +171,7 @@ print_str_pool_item_t *    print_str_pool_allocate (void)
     uint8_t i;
     for (i = 0; i < PRINT_STR_POOL_ITEM_COUNT; i ++) {
         if (false  != s_tExamplePool[i].bIsFree) {
+            s_tExamplePool[i].bIsFree = false;
             return &s_tExamplePool[i];
         }
     }
